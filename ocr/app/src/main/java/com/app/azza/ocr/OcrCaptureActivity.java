@@ -34,6 +34,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -44,11 +45,18 @@ import com.app.azza.ocr.ui.camera.CameraSourcePreview;
 import com.app.azza.ocr.ui.camera.GraphicOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
@@ -79,6 +87,10 @@ public final class OcrCaptureActivity extends AppCompatActivity {
 
     // A TextToSpeech engine for speaking a String value.
     private TextToSpeech tts;
+    private boolean screenClickedToStop=true;
+    private int screenClicksCounter=-1;
+    private int lineNumberToSpeak=0;
+    //private   List mtextList;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -125,6 +137,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                     }
                 };
         tts = new TextToSpeech(this.getApplicationContext(), listener);
+
     }
 
     /**
@@ -339,25 +352,118 @@ public final class OcrCaptureActivity extends AppCompatActivity {
      * @return true if the tap was on a TextBlock
      */
     private boolean onTap(float rawX, float rawY) {
+        Log.v("tap","clicks");
+        //screenClicksCounter++;
+        //check boolean inorder to know the tap means speak or stop
+        if(screenClickedToStop){
+            screenClickedToStop=false;
+        }
+        else screenClickedToStop=true;
         OcrGraphic graphic = mGraphicOverlay.getGraphicAtLocation(rawX, rawY);
-        TextBlock text = null;
-        if (graphic != null) {
-            text = graphic.getTextBlock();
-            if (text != null && text.getValue() != null) {
-                Log.d(TAG, "text data is being spoken! " + text.getValue());
-                // Speak the string.
-                tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+        Text text = null;
+        List textList=getAllGraphicsText();
+
+//        for(Object block:textList){
+//             text=(Text)block;
+//
+//            tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+//        }
+     if(!screenClickedToStop) {
+         Log.v("tap","speak");
+            if (textList.size() > 0) {
+                for (int i = 0; i < textList.size(); i++) {
+                    text = (Text) textList.get(i);
+                    if (text != null && text.getValue() != null) {
+                        tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+                       // lineNumberToSpeak = i;
+
+                    } else {
+                        Log.d(TAG, "text data is null");
+                    }
+                }
+            } else {
+                Log.d(TAG, "no text detected");
             }
-            else {
-                Log.d(TAG, "text data is null");
-            }
+        }else {
+         Log.v("tap","stop");
+            tts.stop();
         }
-        else {
-            Log.d(TAG,"no text detected");
-        }
+//        if (graphic != null) {
+//
+//            text = graphic.getTextBlock();
+//            if (text != null && text.getValue() != null) {
+//                Log.d(TAG, "text data is being spoken! " + text.getValue());
+//                // Speak the string.
+//                tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+//            }
+//            else {
+//                Log.d(TAG, "text data is null");
+//            }
+//        }
+//        else {
+//            Log.d(TAG,"no text detected");
+//        }
+
         return text != null;
     }
 
+
+    // fetch all the graphics from the overlay then get the text block of each graphic,
+    // from each text block get list of the lines forming that block
+    // after merging all these lists we would have a list of lines in a Text object where we can get the bounds of the rect.
+private List getAllGraphicsText(){
+    Set mGraphics = new HashSet<>();
+
+    mGraphics=mGraphicOverlay.getmGraphics();
+   // int size=mGraphics.size();
+    List AllBlockText=new ArrayList();
+//        if (graphic != null) {
+//
+//            text = graphic.getTextBlock();
+//            if (text != null && text.getValue() != null) {
+//                Log.d(TAG, "text data is being spoken! " + text.getValue());
+//                // Speak the string.
+//                tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+//            }
+//            else {
+//                Log.d(TAG, "text data is null");
+//            }
+//        }
+//        else {
+//            Log.d(TAG,"no text detected");
+//        }
+
+    for (Object graphicc : mGraphics) {
+        OcrGraphic g=(OcrGraphic)graphicc;
+        TextBlock mTextBlock= g.getTextBlock();
+      List<Text> texts= (List<Text>) mTextBlock.getComponents();
+        AllBlockText.addAll(texts);
+
+    }
+
+    //sorting the list according to the y-axis coordinate
+    // in order to make app speak the text inorder from the top of the page to its button
+    //because the graphics is saved at first according to the detection process of camera which is random
+    //
+    Comparator <Text> comparable =new Comparator<Text>() {
+        @Override
+        public int compare(Text o1, Text o2) {
+            int x= o1.getBoundingBox().top;
+            int y= o2.getBoundingBox().top;
+            return x-y;
+        }
+//
+//        @Override
+//        public int compare(TextBlock o,TextBlock o2) {
+//           int x= o.getBoundingBox().top;
+//            int y= o2.getBoundingBox().top;
+//            return x-y;
+//        }
+    };
+    Collections.sort(AllBlockText,comparable);
+
+    return  AllBlockText;
+}
     private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
 
         @Override
@@ -419,6 +525,84 @@ public final class OcrCaptureActivity extends AppCompatActivity {
             if (mCameraSource != null) {
                 mCameraSource.doZoom(detector.getScaleFactor());
             }
+        }
+    }
+
+
+    /// make volume buttons make an action
+    //up volume means next line
+    //down volume means previous line
+    //as we get the lines List from the beginning each time we press the button so the size of list may vary depends on the detection
+    //leading to inaccurate int the lineNumberToSpeak index
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int action = event.getAction();
+        int keyCode = event.getKeyCode();
+
+        Text text = null;
+     List mtextList=getAllGraphicsText();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (action == KeyEvent.ACTION_DOWN) {
+
+                    Toast toast = Toast.makeText(this, "volume up pressed", Toast.LENGTH_SHORT);
+                    toast.show();
+
+Log.v("upVolume","up "+lineNumberToSpeak );
+//        for(Object block:textList){
+//             text=(Text)block;
+//
+//            tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+//        }
+                        if (mtextList.size() > 0) {
+                            // for (int i = 0; i < textList.size(); i++) {
+                            if (lineNumberToSpeak < mtextList.size()) {
+                                text = (Text) mtextList.get(lineNumberToSpeak);
+                                if (text != null && text.getValue() != null) {
+                                    tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+                                    if (lineNumberToSpeak < mtextList.size())
+                                        lineNumberToSpeak++;
+
+                                } else {
+                                    Log.d(TAG, "text data is null");
+                                }
+                                // }
+                            }else{
+                                // al list al gdeda lines feha 22al
+                                lineNumberToSpeak=0;
+                            }
+                        }else {
+                                Log.d(TAG, "no text detected");
+                            }
+
+                }
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (action == KeyEvent.ACTION_DOWN) {
+                    Toast toast = Toast.makeText(this, "volume down pressed", Toast.LENGTH_SHORT);
+                    toast.show();
+                    if (mtextList.size() > 0) {
+                        // for (int i = 0; i < textList.size(); i++) {
+                        if(lineNumberToSpeak>-1){
+                        text = (Text) mtextList.get(lineNumberToSpeak);
+                        if (text != null && text.getValue() != null) {
+                            tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+                            if(lineNumberToSpeak>0)
+                               lineNumberToSpeak--;
+
+                        } else {
+                            Log.d(TAG, "text data is null");
+                        }
+                      }else{
+                            lineNumberToSpeak=0;
+                        }
+                    } else {
+                        Log.d(TAG, "no text detected");
+                    }
+                }
+                return true;
+            default:
+                return super.dispatchKeyEvent(event);
         }
     }
 }

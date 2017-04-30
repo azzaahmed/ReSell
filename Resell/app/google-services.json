@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "617120523844",
+    "firebase_url": "https://resell-8d488.firebaseio.com",
+    "project_id": "resell-8d488",
+    "storage_bucket": "resell-8d488.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:617120523844:android:ac62f951d1b25bda",
+        "android_client_info": {
+          "package_name": "com.app.resell"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "617120523844-nkhhpi0b7g4a11crv511obb1l42490n9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.resell",
+            "certificate_hash": "323caa8d2e0cf92fcb4504202b32e4b208a73734"
+          }
+        },
+        {
+          "client_id": "617120523844-ebngbf06ohnrkllb43t0s7r5ujkja1bb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkz07bAwMfBvfdWcTehs0ewTn_csfgfIM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "617120523844-ebngbf06ohnrkllb43t0s7r5ujkja1bb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

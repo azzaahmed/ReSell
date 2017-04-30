@@ -1,20 +1,21 @@
 package com.app.azza.builditbigger;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
-import com.app.azza.androidjokedisplay.JokeActivity;
-import com.example.JokesJava;
+
 
 public class MainActivity extends AppCompatActivity {
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        spinner = (ProgressBar)findViewById(R.id.progressBar1);
     }
 
     @Override
@@ -56,21 +58,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void tellJoke(View view) {
+   /* public void tellJoke(View view) {
 
         String joke;
         JokesJava JokeTeller= new JokesJava();
         joke=JokeTeller.getJoke();
         Toast.makeText(this, joke, Toast.LENGTH_SHORT).show();
     }
-
+*/
     //ba5od joke mn java library ab3atha lel android library 3lshan display
     public void launchJokeActivity(View view) {
-        Intent intent = new Intent(this, JokeActivity.class);
-        JokesJava jokeSource = new JokesJava();
-        String joke = jokeSource.getJoke();
-        intent.putExtra(JokeActivity.JOKE_KEY, joke);
-        startActivity(intent);
+//        Intent intent = new Intent(this, JokeActivity.class);
+//         JokesJava jokeSource = new JokesJava();
+//       String joke = jokeSource.getJoke();
+//
+//      intent.putExtra(JokeActivity.JOKE_KEY, joke);
+//        startActivity(intent);
+
+        spinner.setVisibility(View.VISIBLE);
+
+        new EndpointsAsyncTask().execute(new Pair<Context, ProgressBar>(this,spinner));
     }
 
 }

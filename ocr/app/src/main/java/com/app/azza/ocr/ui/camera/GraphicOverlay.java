@@ -131,6 +131,7 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     public void add(T graphic) {
         synchronized (mLock) {
             mGraphics.add(graphic);
+
         }
         postInvalidate();
     }
@@ -157,11 +158,16 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
             this.getLocationOnScreen(location);
             for (T graphic : mGraphics) {
                 if (graphic.contains(rawX - location[0], rawY - location[1])) {
+
                     return graphic;
                 }
             }
             return null;
         }
+    }
+
+    public Set<T> getmGraphics() {
+        return mGraphics;
     }
 
     /**
