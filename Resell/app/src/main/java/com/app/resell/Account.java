@@ -39,8 +39,6 @@ public class Account implements Serializable {
 
     }
 
-
-
     public String getName() {
         return name;
     }
