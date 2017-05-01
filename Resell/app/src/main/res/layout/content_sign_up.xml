@@ -247,6 +247,13 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     />
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_Gender"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="16dp"
+                    android:paddingLeft="16dp">
                 <Spinner
                     android:layout_gravity="center_vertical"
                     android:id="@+id/gender"
@@ -258,7 +265,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
                     android:entries="@array/GenderSelect"
                     android:prompt="@string/Gender"
                     android:overlapAnchor="false"/>
-
+                </android.support.design.widget.TextInputLayout>
             </TableRow>
 
         </TableLayout>

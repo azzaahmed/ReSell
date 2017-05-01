@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +43,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -66,13 +64,6 @@ public class Profile extends AppCompatActivity {
 
     Bitmap bitmap;
 
-    /////////////////////////////////////////////////////////////
-
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-    String currentDateandTime ;
-
-    // ************************************************************************//
-
     //TextView Name;
     TextView age;
     TextView gender;
@@ -92,8 +83,8 @@ public class Profile extends AppCompatActivity {
     ProgressDialog progress;
     private Button offeredRidesButton;
     private Button requestedRidesButton;
-    private boolean displayCarOwner=false;
-    private String CarOwnerId;
+    private boolean displayOwner=false;
+    private String ProfileOwnerId;
    // private ArrayList<offeredPost> RequestedPostsList = new ArrayList<>();
     private CollapsingToolbarLayout collapsingToolbarLayout;
    Account myAccount;
@@ -122,11 +113,7 @@ public class Profile extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // *********************** upload image ***********************************//
 
-//        if(!com.google.firebase.FirebaseApp.getApps(this).isEmpty()){
-//            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-//        }
 
         mStorage = FirebaseStorage.getInstance().getReference();
 
@@ -152,14 +139,15 @@ public class Profile extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
         Intent intent = getIntent();
-        displayCarOwner = intent.getBooleanExtra("displayCarOwner", false);
-        CarOwnerId = intent.getStringExtra("CarOwnerId");
+        //from post to get the post owner profile
+        displayOwner = intent.getBooleanExtra("displayCarOwner", false);
+        ProfileOwnerId = intent.getStringExtra("CarOwnerId");
         fab = (FloatingActionButton) findViewById(R.id.fab);
-       // fab_nationalid = (FloatingActionButton) findViewById(R.id.fab_nationalID);
+
         pencil=true;
         profile_imageedit=(CircleImageView)findViewById(R.id.profile_imageedit);
 
-        if (displayCarOwner) {
+        if (displayOwner) {
             edit_profile.setVisibility(View.GONE);
             requestedRidesButton.setVisibility(View.GONE);
             offeredRidesButton.setVisibility(View.GONE);
@@ -170,8 +158,8 @@ public class Profile extends AppCompatActivity {
 
             fab.setLayoutParams(p);
             fab.setVisibility(View.GONE);
-            ;
-            getUserInfoCarOwner(CarOwnerId);
+
+            getUserInfoOwner(ProfileOwnerId);
             mobilelayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -187,9 +175,6 @@ public class Profile extends AppCompatActivity {
         else{
             if (user != null) {
                 Log.d("profile", "user not null get user info method");
-//                CoordinatorLayout.LayoutParams p0 = (CoordinatorLayout.LayoutParams) fab_nationalid.getLayoutParams();
-//                p0.setAnchorId(View.NO_ID);
-//                fab_nationalid.setLayoutParams(p0);
 
                 getUserInfo(user);
                 //   getMyRequestedPosts();
@@ -198,13 +183,9 @@ public class Profile extends AppCompatActivity {
                     public void onClick(View v) {
                         if (mmAccount == null)
                             Log.d("azzaaa", "maccount check is null");
-//                        if(edit_profile.getResources("EDIT PROFILE"))
-//                        saveEdit();
+
                         if (pencil) {
                             editClicked();
-                            //  startActivity(new Intent(NewProfile.this, editProfile.class).putExtra("accountinfo", mmAccount));
-                            // getActivity().finish();
-                            //  pencil=true;
                             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
                             pencil = false;
                             profile_imageedit.setVisibility(View.VISIBLE);
@@ -300,11 +281,8 @@ public class Profile extends AppCompatActivity {
                 // data you asked for (the node listName), when you use getValue you know it
                 // will return a String.
                 account[0] = dataSnapshot.getValue(Account.class);
-                // Now take the TextView for the list name
-                // and set it's value to listName.
-                //   startActivity(new Intent(MainActivity.this, Home.class).putExtra("mAccount", new Account(currentUser.getDisplayName(),"","","", currentUser.getEmail(), "" + currentUser.getPhotoUrl())));
-                //  startActivity(new Intent(MainActivity.this, Home.class).putExtra("mAccount", new Account(mmAccount.getName(), mmAccount.getAge(), mmAccount.getMobile(), mmAccount.getGender(), currentUser.getEmail(), "" + currentUser.getPhotoUrl())));
-                myAccount=dataSnapshot.getValue(Account.class);
+
+           myAccount=dataSnapshot.getValue(Account.class);
                 if (account[0] != null) {
                     Log.d("My profile", "inside the data listener" + account[0].getName() + "  " + account[0].getAge() + "  " + account[0].getGender() + "   " + account[0].getMobile());
                     Log.d("My profile", "account from get user info method");
@@ -324,13 +302,12 @@ public class Profile extends AppCompatActivity {
                             .load(currentUser.getPhotoUrl()).fit()
                             .into(profile_image);
 
-
                     if (account[0].getAge() != null) age.setText(account[0].getAge());
                     if (account[0].getMobile() != null) mobile.setText(account[0].getMobile());
                     if (account[0].getGender() != null) gender.setText(account[0].getGender());
 
                     mmAccount=account[0];
-//                    check_before_returnView=true;
+
                     progress.dismiss();
                 }
             }
@@ -343,7 +320,7 @@ public class Profile extends AppCompatActivity {
         });
 
     }
-    public void getUserInfoCarOwner(String ownerId){
+    public void getUserInfoOwner(String ownerId){
 
         final Account[] account = new Account[1];
         String id=ownerId.toString();
@@ -358,8 +335,6 @@ public class Profile extends AppCompatActivity {
                 // Now take the TextView for the list name
                 // and set it's value to listName.
                 Log.d("profile", "inside the data listener" + account[0].getName() + "  " + account[0].getAge() + "  " + account[0].getGender() + "   " + account[0].getMobile());
-                //   startActivity(new Intent(MainActivity.this, Home.class).putExtra("mAccount", new Account(currentUser.getDisplayName(),"","","", currentUser.getEmail(), "" + currentUser.getPhotoUrl())));
-                //  startActivity(new Intent(MainActivity.this, Home.class).putExtra("mAccount", new Account(mmAccount.getName(), mmAccount.getAge(), mmAccount.getMobile(), mmAccount.getGender(), currentUser.getEmail(), "" + currentUser.getPhotoUrl())));
 
                 if (account[0] != null) {
                     Log.d("profile", "account from get user info method");
@@ -511,9 +486,7 @@ public class Profile extends AppCompatActivity {
         mage=ageedit.getText().toString().trim();
         mname= Nameedit.getText().toString().trim();
         mmobile=mobileedit.getText().toString().trim();
-//        mgender=gender.getText().toString().trim();
         mgender=genderedit.getSelectedItem().toString();
-
         memail=emailedit.getText().toString().trim();
 
         if(myAccount!=null) {
@@ -628,31 +601,7 @@ public class Profile extends AppCompatActivity {
 
         }
     }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-//            Uri filePath = data.getData();
-//            try {
-//                //Getting the Bitmap from Gallery
-//                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-//                //Setting the Bitmap to ImageView
-//                profilepic_attached = true ;
-//                profile_imageedit.setImageBitmap(bitmap);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//    public String getStringImage(Bitmap bmp){
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        bmp.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-//        byte[] imageBytes = baos.toByteArray();
-//        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-//        return encodedImage;
-//    }
+
 
     public void UploadImage() throws IOException {
 
@@ -661,27 +610,9 @@ public class Profile extends AppCompatActivity {
 
         if(imageUri != null){
 //            //Getting the Bitmap from Gallery
-//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-//            byte[] imageBytes = baos.toByteArray();
-//            String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
-//            Bitmap bitmap = BitmapFactory.decodeFile(imageUri.getPath(), options);
-//            bitmap = MediaStore.Images.Media.getBitmap(getContentResolverlver(), filePath);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
             byte[] bytes = baos.toByteArray();
-            String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);// no need
-
-//            UploadTask uploadTask = filepath.putBytes(bytes);
-
-//            // we finally have our base64 string version of the image, save it.
-//            firebase.child("pic").setValue(base64Image);
-
-//        return encodedImage;
             StorageReference filepath = mStorage.child("UsersImages").child(imageUri.getLastPathSegment());
             UploadTask uploadTask = filepath.putBytes(bytes);
 
@@ -721,67 +652,5 @@ public class Profile extends AppCompatActivity {
         returnprofileView();
 
     }
-
-//    public  void enter_pic(){
-//
-////        now.setToNow();
-//        currentDateandTime = sdf.format(new Date());
-//        //profile_pic_path+=currentDateandTime+".png";
-//
-//        final ProgressDialog loading = ProgressDialog.show(this,"Uploading Image...","Please wait...",false,false);
-//        StringRequest stringRequest_pic = new StringRequest(Request.Method.POST, UPLOAD_URL_pic,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String s) {
-//                        //Disimissing the progress dialog
-//                        loading.dismiss();
-//                        //Showing toast message of the response
-//                        //pic_response=s;
-////                        profile_pic_path+=id+".png";
-//
-//                        //Toast.makeText(SignupActivity.this, s, Toast.LENGTH_LONG).show();
-//                        firebasedit();
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError volleyError) {
-//                        //Dismissing the progress dialog
-//                        loading.dismiss();
-//                        try {
-//                            //Showing toast
-//                            Toast.makeText(NewProfile.this, volleyError.getMessage().toString(), Toast.LENGTH_LONG).show();
-//                        } catch (Exception e){
-//                            //Toast.makeText(Registration.this,e.toString(), Toast.LENGTH_LONG).show();
-//                            Toast.makeText(NewProfile.this,"can't upload your image !", Toast.LENGTH_LONG).show();
-//                            // No Clear Error , You can put your code here
-//                        }
-//                    }
-//                }){
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                //Converting Bitmap to String
-//                String image = getStringImage(bitmap);
-//
-//                //Creating parameters
-//                Map<String,String> params = new Hashtable<String, String>();
-//
-//                //Adding parameters
-//                params.put(KEY_IMAGE, image);
-//                params.put(KEY_PATH,"uploads/"+currentDateandTime+".png");
-//                //actualpath
-//
-//                //returning parameters
-//                return params;
-//            }
-//        };stringRequest_pic.setRetryPolicy(new DefaultRetryPolicy(
-//                30000,
-//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//
-//        requestQueue = Volley.newRequestQueue(this);
-//
-//        requestQueue.add(stringRequest_pic);
-//    }
 
 }

@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+//sign in
 public class MainActivity extends AppCompatActivity  implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
@@ -414,6 +415,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
 
                         // in sign in succeed auth listener is fired automatically
                         //       else SignGoogleCredentialcompleted=true;
+                        if(firebaseAuth.getCurrentUser()!=null)
                         checkAccountExists(firebaseAuth.getCurrentUser());
 
 

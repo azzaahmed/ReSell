@@ -39,7 +39,6 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 public class SignUp extends AppCompatActivity implements View.OnClickListener {
@@ -56,37 +55,24 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView imageView_circle;
 
-    boolean profilepic_attached = false;
+    boolean profilePic_attached = false;
 
     Bitmap bitmap;
 
-    /////////////////////////////////////////////////////////////
-    // *********************** upload id ***********************************//
-
-//    static final int REQUEST_IMAGE_CAPTURE = 2;
-//    private ImageView imageView_nationalid;
-//    Bitmap imageBitmap;
-//    String mCurrentPhotoPathid;
-//    boolean nationalid_attached = false;
-    /////////////////////////////////////////////////////////////
-
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-    String currentDateandTime ;
-
-    // ************************************************************************//
 
     private static final String TAG = "SignInActivity";
 
-    private TextInputLayout inputLayoutname;
-    private TextInputLayout inputLayoutage;
-    private TextInputLayout inputLayoutmobile;
-    private TextInputLayout inputLayoutemail;
-    private TextInputLayout inputLayoutpass;
+    private TextInputLayout inputLayoutName;
+    private TextInputLayout inputLayoutAge;
+    private TextInputLayout inputLayoutMobile;
+    private TextInputLayout inputLayoutEmail;
+    private TextInputLayout inputLayoutPass;
+    private TextInputLayout inputLayoutGender;
 
     //defining view objects
     private EditText editTextEmail;
     private EditText editTextPassword;
-    private Button buttonSignup;
+    private Button buttonSignUp;
     private ProgressDialog progressDialog;
     private EditText Name;
     private EditText age;
@@ -110,25 +96,17 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         imageView_circle  = (ImageView) findViewById(R.id.buttonChoose);
         imageView_circle.setOnClickListener(this);
 
-//        if(!com.google.firebase.FirebaseApp.getApps(this).isEmpty()){
-//            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-//        }
-
         mStorage = FirebaseStorage.getInstance().getReference();
 
         // ************************************************************************//
-        // *********************** upload id ***********************************//
 
-//        imageView_nationalid = (ImageView) findViewById(R.id.upload_id);
-//        imageView_nationalid.setOnClickListener(this);
-
-        // ************************************************************************//
         // *********************** validation   ***********************************//
-        inputLayoutname = (TextInputLayout) findViewById(R.id.input_layout_name);
-        inputLayoutage = (TextInputLayout) findViewById(R.id.input_layout_age);
-        inputLayoutmobile = (TextInputLayout) findViewById(R.id.input_layout_mobile);
-        inputLayoutemail = (TextInputLayout) findViewById(R.id.input_layout_email);
-        inputLayoutpass = (TextInputLayout) findViewById(R.id.input_layout_pass);
+        inputLayoutName = (TextInputLayout) findViewById(R.id.input_layout_name);
+        inputLayoutAge = (TextInputLayout) findViewById(R.id.input_layout_age);
+        inputLayoutMobile = (TextInputLayout) findViewById(R.id.input_layout_mobile);
+        inputLayoutEmail = (TextInputLayout) findViewById(R.id.input_layout_email);
+        inputLayoutPass = (TextInputLayout) findViewById(R.id.input_layout_pass);
+        inputLayoutGender = (TextInputLayout) findViewById(R.id.input_layout_Gender);
         // ************************************************************************//
 
         //initializing firebase auth object
@@ -137,7 +115,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
 
-        buttonSignup = (Button) findViewById(R.id.buttonSignup);
+        buttonSignUp = (Button) findViewById(R.id.buttonSignup);
 
         progressDialog = new ProgressDialog(this);
 
@@ -146,7 +124,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         Name = (EditText) findViewById(R.id.name);
         mobile = (EditText) findViewById(R.id.mobile);
 
-        buttonSignup.setOnClickListener(this);
+        buttonSignUp.setOnClickListener(this);
 
         Log.d(TAG, "in create");
 
@@ -175,12 +153,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             case R.id.buttonChoose:
                 showFileChooser();
                 break;
-            // ************************************************************************//
-            // *********************** upload image ***********************************//
-//            case R.id.upload_id:
-//                dispatchTakePictureIntent();
-//                break;
-            // ************************************************************************//
+
+
         }
     }
 
@@ -190,13 +164,14 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         //getting email and password from edit texts
         final String email = editTextEmail.getText().toString().trim();
         String password  = editTextPassword.getText().toString().trim();
-        final String mage=age.getText().toString().trim();
-        final String mname= Name.getText().toString().trim();
-        final String mmobile=mobile.getText().toString().trim();
+        final String mAge=age.getText().toString().trim();
+        final String mName= Name.getText().toString().trim();
+        final String mMobile=mobile.getText().toString().trim();
+        final String mGender=gender.getSelectedItem().toString();
 //            final String mgender=gender.getText().toString().trim();
 //            final String msmoker=smoker.getText().toString().trim();
         // final String msmoker = smoker.getSelectedItem().toString();
-        final String mgender=gender.getSelectedItem().toString();
+     /*
         //checking if email and passwords are empty
         if(TextUtils.isEmpty(email)){
             Toast.makeText(this, "Please enter email", Toast.LENGTH_LONG).show();
@@ -207,33 +182,34 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             Toast.makeText(this,"Please enter password",Toast.LENGTH_LONG).show();
             return;
         }
-        if(TextUtils.isEmpty(mage)){
+        if(TextUtils.isEmpty(mAge)){
             Toast.makeText(this,"Please enter your age",Toast.LENGTH_LONG).show();
             return;
 
         }
-        if(TextUtils.isEmpty(mmobile)){
+        if(TextUtils.isEmpty(mMobile)){
             Toast.makeText(this,"Please enter your mobile number",Toast.LENGTH_LONG).show();
             return;
 
         }
-        if(mgender.equals("Gender")){
+        if(mGender.equals("Gender")){
             Toast.makeText(this,"Please enter your gender",Toast.LENGTH_LONG).show();
             return;
 
         }
-        if(TextUtils.isEmpty(mname)){
+        if(TextUtils.isEmpty(mName)){
             Toast.makeText(this,"Please enter your name",Toast.LENGTH_LONG).show();
             return;
 
         }
+        */
 //            if(TextUtils.isEmpty(msmoker)){
 //                Toast.makeText(this,"you are smoker or not",Toast.LENGTH_LONG).show();
 //                return;
 //
 //            }
 
-        if(profilepic_attached) {
+        if(profilePic_attached) {
             UploadImage();
         }
         else{
@@ -244,17 +220,12 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     // *********************** upload image ***********************************//
 
     private void showFileChooser() {
-//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        startActivityForResult(intent,GALLERY_REQUEST);
+        startActivityForResult(intent, GALLERY_REQUEST);
     }
-    //    private void dispatchTakePictureIntent() {
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-//        }
-//    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -271,19 +242,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 e.printStackTrace();
             }
             imageView_circle.setImageURI(imageUri);
-            profilepic_attached = true;
+            profilePic_attached = true;
 
         }
 
-//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-//            Bundle extras = data.getExtras();
-//            imageBitmap = (Bitmap) extras.get("data");
-//            imageView_nationalid.setImageBitmap(imageBitmap);
-//            nationalid_attached = true;
-////            // Create an image file name
-////            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-////            String imageFileName = "JPEG_" + timeStamp + "_";
-//        }
     }
 
     public void fireBaseRegestration_noprofile_pic(){
@@ -307,13 +269,12 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
 
                             FirebaseUser user = firebaseAuth.getCurrentUser();
-                            ;
                             Account myaccount = new Account(mname, mage, mmobile, mgender, email, user.getPhotoUrl() + "");
 
                             //databaseReference.child("users").child(user.getUid()).setValue(myaccount);
-                            DatabaseReference x=  databaseReference.child("users").child(user.getUid());
+                            DatabaseReference x = databaseReference.child("users").child(user.getUid());
                             x.setValue(myaccount);
-                            String key= x.getKey();
+                            String key = x.getKey();
                             HashMap<String, Object> result = new HashMap<>();
                             result.put("id", key);
                             x.updateChildren(result);
@@ -362,34 +323,23 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     profile_pic_path = taskSnapshot.getDownloadUrl()+"";
-                    fireBaseRegestration();
+                    fireBaseRegistration();
                 }
             });
-//            filepath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-////                    Toast.makeText(SignupActivity.this, "upload done. , "+taskSnapshot.getDownloadUrl(), Toast.LENGTH_LONG).show();
-//                    profile_pic_path = taskSnapshot.getDownloadUrl()+"";
-//                    fireBaseRegestration();
-//                }
-//            });
+
         }
-//        if(imageBitmap != null){
-//
-//
-//
-//        }
+
 
     }
 
-    public void fireBaseRegestration(){
+    public void fireBaseRegistration(){
 
         final String email = editTextEmail.getText().toString().trim();
         String password  = editTextPassword.getText().toString().trim();
-        final String mage=age.getText().toString().trim();
-        final String mname= Name.getText().toString().trim();
-        final String mmobile=mobile.getText().toString().trim();
-        final String mgender=gender.getSelectedItem().toString();
+        final String mAge=age.getText().toString().trim();
+        final String mName= Name.getText().toString().trim();
+        final String mMobile=mobile.getText().toString().trim();
+        final String mGender=gender.getSelectedItem().toString();
 
         //creating a new user
         firebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -401,11 +351,17 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
                             FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                           Account myaccount = new Account(mname, mage, mmobile, mgender, email, profile_pic_path);
+                           Account myaccount = new Account(mName, mAge, mMobile, mGender, email, profile_pic_path);
 
                             databaseReference.child("users").child(user.getUid()).setValue(myaccount);
-
                             Toast.makeText(SignUp.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                            Bundle myBundle = new Bundle();
+                            myBundle.putSerializable("accountinfo", (Serializable) myaccount);
+                            Intent myIntent = new Intent(getApplicationContext(), Home.class);
+                            myIntent.putExtras(myBundle);
+                            finish();
+                            startActivity(myIntent);
+
 
                         } else {
                             //display some message here
@@ -421,60 +377,68 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         int counter = 0;
         if (Name.getText().toString().trim().isEmpty()) {
-            inputLayoutname.setError("please enter your name");
+            inputLayoutName.setError("please enter your name");
             requestFocus(Name);
             counter ++;
         } else {
-            inputLayoutname.setErrorEnabled(false);
+            inputLayoutName.setErrorEnabled(false);
         }
         if (age.getText().toString().trim().isEmpty()) {
-            inputLayoutage.setError("please enter your age");
+            inputLayoutAge.setError("please enter your age");
             requestFocus(age);
             counter ++;
         } else {
-            if(Integer.parseInt(age.getText().toString().trim())<18 || Integer.parseInt(age.getText().toString().trim())> 90) {
-                inputLayoutage.setError("please enter reasonable age");
+            if(Integer.parseInt(age.getText().toString().trim())<12 || Integer.parseInt(age.getText().toString().trim())> 90) {
+                inputLayoutAge.setError("please enter reasonable age");
                 requestFocus(age);
                 counter++;
             }
             else
-                inputLayoutage.setErrorEnabled(false);
+                inputLayoutAge.setErrorEnabled(false);
         }
         if (mobile.getText().toString().trim().isEmpty()) {
-            inputLayoutmobile.setError("Invalid mobile number");
+            inputLayoutMobile.setError("Invalid mobile number");
             requestFocus(mobile);
             counter ++;
         } else {
-            inputLayoutmobile.setErrorEnabled(false);
+            inputLayoutMobile.setErrorEnabled(false);
         }
         if (editTextEmail.getText().toString().trim().isEmpty()) {
-            inputLayoutemail.setError("Invalid Email");
+            inputLayoutEmail.setError("Invalid Email");
             requestFocus(editTextEmail);
             counter ++;
         } else {
-            inputLayoutemail.setErrorEnabled(false);
+            inputLayoutEmail.setErrorEnabled(false);
         }
         if (editTextPassword.getText().toString().trim().isEmpty()|| editTextPassword.getText().toString().trim().length()<6) {
-            inputLayoutpass.setError("password at least 6 characters");
+            inputLayoutPass.setError("password at least 6 characters");
             requestFocus(editTextPassword);
             counter ++;
         } else {
-            inputLayoutpass.setErrorEnabled(false);
+            inputLayoutPass.setErrorEnabled(false);
         }
         if(!isValidEmail(editTextEmail.getText())){
-            inputLayoutemail.setError("Invalid Email");
+            inputLayoutEmail.setError("Invalid Email");
             requestFocus(editTextEmail);
             counter ++;
         } else {
-            inputLayoutemail.setErrorEnabled(false);
+            inputLayoutEmail.setErrorEnabled(false);
         }
 
         if(!isValidPhone(mobile.getText())){
-            inputLayoutmobile.setError("Invalid mobile number");
+            inputLayoutMobile.setError("Invalid mobile number");
             requestFocus(mobile);
             counter ++;
         } else {
-            inputLayoutmobile.setErrorEnabled(false);
+            inputLayoutMobile.setErrorEnabled(false);
+        }
+        if(gender.getSelectedItem().toString().equals("Gender")){
+            //Toast.makeText(this,"Please enter your gender",Toast.LENGTH_LONG).show();
+            inputLayoutGender.setError("Enter your gender");
+            requestFocus(gender);
+            counter ++;
+        }else{
+            inputLayoutGender.setErrorEnabled(false);
         }
 
         if(counter == 0){
