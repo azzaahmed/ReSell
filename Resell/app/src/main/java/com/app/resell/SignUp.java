@@ -1,6 +1,8 @@
 package com.app.resell;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.app.resell.Data.FireBaseCalls;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -84,7 +87,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth.AuthStateListener mAuthListener;
     //defining a database reference
     private DatabaseReference databaseReference;
-
+    private FireBaseCalls FireBaseCalls;
+    private Activity Activity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +130,9 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         buttonSignUp.setOnClickListener(this);
 
+
+        FireBaseCalls= new FireBaseCalls();
+        Activity = this;
         Log.d(TAG, "in create");
 
         // Button listeners
@@ -161,64 +168,27 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
 
     private void registerUser(){
-        //getting email and password from edit texts
-        final String email = editTextEmail.getText().toString().trim();
-        String password  = editTextPassword.getText().toString().trim();
-        final String mAge=age.getText().toString().trim();
-        final String mName= Name.getText().toString().trim();
-        final String mMobile=mobile.getText().toString().trim();
-        final String mGender=gender.getSelectedItem().toString();
+
 //            final String mgender=gender.getText().toString().trim();
 //            final String msmoker=smoker.getText().toString().trim();
         // final String msmoker = smoker.getSelectedItem().toString();
-     /*
-        //checking if email and passwords are empty
-        if(TextUtils.isEmpty(email)){
-            Toast.makeText(this, "Please enter email", Toast.LENGTH_LONG).show();
-            return;
-        }
 
-        if(TextUtils.isEmpty(password)){
-            Toast.makeText(this,"Please enter password",Toast.LENGTH_LONG).show();
-            return;
-        }
-        if(TextUtils.isEmpty(mAge)){
-            Toast.makeText(this,"Please enter your age",Toast.LENGTH_LONG).show();
-            return;
-
-        }
-        if(TextUtils.isEmpty(mMobile)){
-            Toast.makeText(this,"Please enter your mobile number",Toast.LENGTH_LONG).show();
-            return;
-
-        }
-        if(mGender.equals("Gender")){
-            Toast.makeText(this,"Please enter your gender",Toast.LENGTH_LONG).show();
-            return;
-
-        }
-        if(TextUtils.isEmpty(mName)){
-            Toast.makeText(this,"Please enter your name",Toast.LENGTH_LONG).show();
-            return;
-
-        }
-        */
 //            if(TextUtils.isEmpty(msmoker)){
 //                Toast.makeText(this,"you are smoker or not",Toast.LENGTH_LONG).show();
 //                return;
-//
 //            }
 
         if(profilePic_attached) {
             UploadImage();
         }
         else{
-            fireBaseRegestration_noprofile_pic();
+           // fireBaseRegistration_noProfile_pic( editTextEmail,editTextPassword,age, Name,mobile, gender," ",getApplicationContext());
+            FireBaseCalls. fireBaseRegistration(editTextEmail, editTextPassword, age, Name, mobile, gender, " ", getApplicationContext(), true,Activity);
+
         }
     }
 
     // *********************** upload image ***********************************//
-
     private void showFileChooser() {
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -248,14 +218,14 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     }
 
-    public void fireBaseRegestration_noprofile_pic(){
+    public void fireBaseRegistration_noProfile_pic(EditText editTextEmail,EditText editTextPassword,EditText age,EditText Name,EditText mobile,Spinner gender, String pic_path, final Context context){
 
         final String email = editTextEmail.getText().toString().trim();
         String password  = editTextPassword.getText().toString().trim();
-        final String mage=age.getText().toString().trim();
-        final String mname= Name.getText().toString().trim();
-        final String mmobile=mobile.getText().toString().trim();
-        final String mgender=gender.getSelectedItem().toString();
+        final String mAge=age.getText().toString().trim();
+        final String mName= Name.getText().toString().trim();
+        final String mMobile=mobile.getText().toString().trim();
+        final String mGender=gender.getSelectedItem().toString();
 
         progressDialog.setMessage("Registering Please Wait...");
         progressDialog.show();
@@ -269,26 +239,25 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
 
                             FirebaseUser user = firebaseAuth.getCurrentUser();
-                            Account myaccount = new Account(mname, mage, mmobile, mgender, email, user.getPhotoUrl() + "");
+                            Account myAccount = new Account(mName, mAge, mMobile, mGender, email, user.getPhotoUrl() + "");
 
-                            //databaseReference.child("users").child(user.getUid()).setValue(myaccount);
                             DatabaseReference x = databaseReference.child("users").child(user.getUid());
-                            x.setValue(myaccount);
+                            x.setValue(myAccount);
                             String key = x.getKey();
                             HashMap<String, Object> result = new HashMap<>();
                             result.put("id", key);
                             x.updateChildren(result);
 
-                            Toast.makeText(SignUp.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Registration successful", Toast.LENGTH_SHORT).show();
                             Bundle myBundle = new Bundle();
-                            myBundle.putSerializable("accountinfo", (Serializable) myaccount);
-                            Intent myIntent = new Intent(getApplicationContext(), Home.class);
+                            myBundle.putSerializable("accountinfo", (Serializable) myAccount);
+                            Intent myIntent = new Intent(context, Home.class);
                             myIntent.putExtras(myBundle);
                             finish();
                             startActivity(myIntent);
                         } else {
                             //display some message here
-                            Toast.makeText(SignUp.this, "Account already exists", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Account already exists", Toast.LENGTH_LONG).show();
                         }
                         progressDialog.dismiss();
                     }
@@ -323,7 +292,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     profile_pic_path = taskSnapshot.getDownloadUrl()+"";
-                    fireBaseRegistration();
+                    FireBaseCalls. fireBaseRegistration( editTextEmail,editTextPassword,age, Name,mobile, gender,profile_pic_path,getApplicationContext(),false,Activity);
                 }
             });
 
@@ -332,46 +301,55 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     }
 
-    public void fireBaseRegistration(){
-
-        final String email = editTextEmail.getText().toString().trim();
-        String password  = editTextPassword.getText().toString().trim();
-        final String mAge=age.getText().toString().trim();
-        final String mName= Name.getText().toString().trim();
-        final String mMobile=mobile.getText().toString().trim();
-        final String mGender=gender.getSelectedItem().toString();
-
-        //creating a new user
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        //checking if success
-                        if (task.isSuccessful()) {
-
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                           Account myaccount = new Account(mName, mAge, mMobile, mGender, email, profile_pic_path);
-
-                            databaseReference.child("users").child(user.getUid()).setValue(myaccount);
-                            Toast.makeText(SignUp.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                            Bundle myBundle = new Bundle();
-                            myBundle.putSerializable("accountinfo", (Serializable) myaccount);
-                            Intent myIntent = new Intent(getApplicationContext(), Home.class);
-                            myIntent.putExtras(myBundle);
-                            finish();
-                            startActivity(myIntent);
-
-
-                        } else {
-                            //display some message here
-                            Toast.makeText(SignUp.this, "Account already exists", Toast.LENGTH_LONG).show();
-                        }
-                        progressDialog.dismiss();
-                    }
-                });
-
-    }
+//    public void fireBaseRegistration(EditText editTextEmail,EditText editTextPassword,EditText age,EditText Name,EditText mobile,Spinner gender, final String profile_pic_path, final Context context, final boolean noProfilePictureFlag){
+//        final String email = editTextEmail.getText().toString().trim();
+//        String password  = editTextPassword.getText().toString().trim();
+//        final String mAge=age.getText().toString().trim();
+//        final String mName= Name.getText().toString().trim();
+//        final String mMobile=mobile.getText().toString().trim();
+//        final String mGender=gender.getSelectedItem().toString();
+//        final String pic_path=profile_pic_path;
+//        //creating a new user
+//        firebaseAuth.createUserWithEmailAndPassword(email, password)
+//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<AuthResult> task) {
+//                        //checking if success
+//                        if (task.isSuccessful()) {
+//
+//                            FirebaseUser user = firebaseAuth.getCurrentUser();
+//                            Account myAccount;
+//                            if(!noProfilePictureFlag)
+//                            myAccount = new Account(mName, mAge, mMobile, mGender, email,pic_path);
+//                            else
+//                             myAccount = new Account(mName, mAge, mMobile, mGender, email, user.getPhotoUrl() + "");
+//
+//                            DatabaseReference x = databaseReference.child("users").child(user.getUid());
+//                            x.setValue(myAccount);
+//                            String key = x.getKey();
+//                            HashMap<String, Object> result = new HashMap<>();
+//                            result.put("id", key);
+//                            x.updateChildren(result);
+//
+//                            Toast.makeText(context, "Registration successful", Toast.LENGTH_SHORT).show();
+//                            Bundle myBundle = new Bundle();
+//                            myBundle.putSerializable("accountinfo", (Serializable) myAccount);
+//                            Intent myIntent = new Intent(context, Home.class);
+//                            myIntent.putExtras(myBundle);
+//                            finish();
+//                            startActivity(myIntent);
+//
+//
+//                        } else {
+//                            //display some message here
+//                            Toast.makeText(context, "Account already exists", Toast.LENGTH_LONG).show();
+//
+//                        }
+//                        progressDialog.dismiss();
+//                    }
+//                });
+//
+//    }
 
     private boolean validForm(){
 
