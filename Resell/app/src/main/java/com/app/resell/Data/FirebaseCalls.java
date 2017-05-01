@@ -31,6 +31,7 @@ public  class  FireBaseCalls {
     private FirebaseAuth firebaseAuth;
     //defining a database reference
     private DatabaseReference databaseReference;
+    private FirebaseUser user;
    private ProgressDialog progressDialog;
 
     public FireBaseCalls() {
@@ -42,6 +43,7 @@ public  class  FireBaseCalls {
         //initializing firebase auth object
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
         progressDialog = new ProgressDialog(Activity);
         progressDialog.setMessage("Registering Please Wait...");
         progressDialog.show();
@@ -92,6 +94,26 @@ public  class  FireBaseCalls {
                        progressDialog.dismiss();
                     }
                 });
+
+    }
+
+    public void AddFireBaseExtraInfo(String mName,String mAge,String mMobile,String mGender, String email ,String photoUrl, Activity Activity){
+
+        //initializing firebase auth object
+        firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        user = firebaseAuth.getCurrentUser();
+        Account myAccount = new Account(mName, mAge, mMobile, mGender, email,photoUrl);
+
+        DatabaseReference x=  databaseReference.child("users").child(user.getUid());
+        x.setValue(myAccount);
+        // pushing key as id field in the table after pushing object
+        String key= x.getKey();
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", key);
+        x.updateChildren(result);
+        // startActivity(new Intent(this, Profile.class));
+        Activity.finish();
 
     }
 }

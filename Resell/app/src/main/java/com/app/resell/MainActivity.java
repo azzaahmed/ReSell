@@ -159,9 +159,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid() + "  " + user.getProviders() + "  " + user.getDisplayName());
 
-                    //         getUserInfo(user);
-                    //and open profile activity
-
+//  counterin is needed as for some reason the listener is triggered two times (found out it is an issue with firebase listener itself)
                     if (!SignedInclick) {
                         if(counterin!=1&&counterin!=2) {
                             Log.d(TAG, "sent to Find Ride from auth listener");
@@ -339,12 +337,8 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
     private void updateUI(boolean signedIn) {
         if (signedIn) {
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            //   findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
-            //    mStatusTextView.setText("Signedout");
-
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            //  findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
 
@@ -421,7 +415,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
 
                         // [START_EXCLUDE]
                         hideProgressDialog();
-                        //   startActivity(new Intent(MainActivity.this, Home.class).putExtra("mAccount", myAccount));
+
                         // [END_EXCLUDE]
 
 
@@ -463,8 +457,6 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
                         progressDialog.dismiss();
                         //if the task is successful
                         if(task.isSuccessful()){
-
-//                            startActivity(new Intent(getApplicationContext(), Home.class)); // new
                             startActivity(new Intent(getApplicationContext(), Home.class));
                             finish();
 
@@ -495,6 +487,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
                     finish();
                 } else {
                     finish();
+                    //if it is the first time to sign in with google go to edit profile to add the extra needed info for the profile
                     startActivity(new Intent(getApplicationContext(), editProfile.class));
 
                 }

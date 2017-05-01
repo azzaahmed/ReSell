@@ -36,7 +36,6 @@ import java.io.IOException;
 public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     // *********************** upload image ***********************************//
-
     private String profile_pic_path;
 
     private Uri imageUri = null;
@@ -50,7 +49,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     boolean profilePic_attached = false;
 
     Bitmap bitmap;
-
 
     private static final String TAG = "SignInActivity";
 
@@ -145,7 +143,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         }
     }
-    
+
     private void registerUser(){
 
 //            final String mgender=gender.getText().toString().trim();
