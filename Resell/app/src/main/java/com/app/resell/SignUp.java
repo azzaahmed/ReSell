@@ -2,7 +2,6 @@ package com.app.resell;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.WindowManager;
@@ -26,23 +24,14 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.app.resell.Data.FireBaseCalls;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
 
 public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
@@ -82,11 +71,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     private EditText mobile;
     private Spinner gender;
 
-    //defining firebaseauth object
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    //defining a database reference
-    private DatabaseReference databaseReference;
+
     private FireBaseCalls FireBaseCalls;
     private Activity Activity;
     @Override
@@ -96,6 +81,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         // *********************** upload image ***********************************//
         imageView_circle  = (ImageView) findViewById(R.id.buttonChoose);
         imageView_circle.setOnClickListener(this);
@@ -113,9 +100,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         inputLayoutGender = (TextInputLayout) findViewById(R.id.input_layout_Gender);
         // ************************************************************************//
 
-        //initializing firebase auth object
-        firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
 
@@ -133,10 +118,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         FireBaseCalls= new FireBaseCalls();
         Activity = this;
-        Log.d(TAG, "in create");
-
-        // Button listeners
-        //    findViewById(R.id.sign_in_button).setOnClickListener(this);
     }
     @Override
     public void onStart() {
@@ -156,7 +137,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     registerUser();
                 }
                 break;
-            // *********************** upload image ***********************************//
+            // upload image
             case R.id.buttonChoose:
                 showFileChooser();
                 break;
@@ -164,9 +145,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         }
     }
-
-
-
+    
     private void registerUser(){
 
 //            final String mgender=gender.getText().toString().trim();
@@ -179,16 +158,16 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 //            }
 
         if(profilePic_attached) {
+            //UploadImage call fireBaseRegistration inside it but passes the image_path and boolean of false as there is an image
             UploadImage();
         }
         else{
-           // fireBaseRegistration_noProfile_pic( editTextEmail,editTextPassword,age, Name,mobile, gender," ",getApplicationContext());
-            FireBaseCalls. fireBaseRegistration(editTextEmail, editTextPassword, age, Name, mobile, gender, " ", getApplicationContext(), true,Activity);
+          FireBaseCalls.fireBaseRegistration(editTextEmail, editTextPassword, age, Name, mobile, gender, " ", getApplicationContext(), true,Activity);
 
         }
     }
 
-    // *********************** upload image ***********************************//
+    // image upload
     private void showFileChooser() {
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -206,7 +185,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
-//                Bitmap bitmap = BitmapFactory.decodeFile(imageUri.getPath(), options);
+
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -216,52 +195,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         }
 
-    }
-
-    public void fireBaseRegistration_noProfile_pic(EditText editTextEmail,EditText editTextPassword,EditText age,EditText Name,EditText mobile,Spinner gender, String pic_path, final Context context){
-
-        final String email = editTextEmail.getText().toString().trim();
-        String password  = editTextPassword.getText().toString().trim();
-        final String mAge=age.getText().toString().trim();
-        final String mName= Name.getText().toString().trim();
-        final String mMobile=mobile.getText().toString().trim();
-        final String mGender=gender.getSelectedItem().toString();
-
-        progressDialog.setMessage("Registering Please Wait...");
-        progressDialog.show();
-
-        //creating a new user
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        //checking if success
-                        if (task.isSuccessful()) {
-
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            Account myAccount = new Account(mName, mAge, mMobile, mGender, email, user.getPhotoUrl() + "");
-
-                            DatabaseReference x = databaseReference.child("users").child(user.getUid());
-                            x.setValue(myAccount);
-                            String key = x.getKey();
-                            HashMap<String, Object> result = new HashMap<>();
-                            result.put("id", key);
-                            x.updateChildren(result);
-
-                            Toast.makeText(context, "Registration successful", Toast.LENGTH_SHORT).show();
-                            Bundle myBundle = new Bundle();
-                            myBundle.putSerializable("accountinfo", (Serializable) myAccount);
-                            Intent myIntent = new Intent(context, Home.class);
-                            myIntent.putExtras(myBundle);
-                            finish();
-                            startActivity(myIntent);
-                        } else {
-                            //display some message here
-                            Toast.makeText(context, "Account already exists", Toast.LENGTH_LONG).show();
-                        }
-                        progressDialog.dismiss();
-                    }
-                });
     }
 
     public void UploadImage(){
@@ -276,9 +209,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);// no need
 
             StorageReference filepath = mStorage.child("UsersImages").child(imageUri.getLastPathSegment());
-            //********* national id ***************//
-
-            /////////////////////////////////////////
             UploadTask uploadTask = filepath.putBytes(bytes);
 
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -290,7 +220,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     profile_pic_path = taskSnapshot.getDownloadUrl()+"";
                     FireBaseCalls. fireBaseRegistration( editTextEmail,editTextPassword,age, Name,mobile, gender,profile_pic_path,getApplicationContext(),false,Activity);
                 }
@@ -300,56 +229,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
 
     }
-
-//    public void fireBaseRegistration(EditText editTextEmail,EditText editTextPassword,EditText age,EditText Name,EditText mobile,Spinner gender, final String profile_pic_path, final Context context, final boolean noProfilePictureFlag){
-//        final String email = editTextEmail.getText().toString().trim();
-//        String password  = editTextPassword.getText().toString().trim();
-//        final String mAge=age.getText().toString().trim();
-//        final String mName= Name.getText().toString().trim();
-//        final String mMobile=mobile.getText().toString().trim();
-//        final String mGender=gender.getSelectedItem().toString();
-//        final String pic_path=profile_pic_path;
-//        //creating a new user
-//        firebaseAuth.createUserWithEmailAndPassword(email, password)
-//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        //checking if success
-//                        if (task.isSuccessful()) {
-//
-//                            FirebaseUser user = firebaseAuth.getCurrentUser();
-//                            Account myAccount;
-//                            if(!noProfilePictureFlag)
-//                            myAccount = new Account(mName, mAge, mMobile, mGender, email,pic_path);
-//                            else
-//                             myAccount = new Account(mName, mAge, mMobile, mGender, email, user.getPhotoUrl() + "");
-//
-//                            DatabaseReference x = databaseReference.child("users").child(user.getUid());
-//                            x.setValue(myAccount);
-//                            String key = x.getKey();
-//                            HashMap<String, Object> result = new HashMap<>();
-//                            result.put("id", key);
-//                            x.updateChildren(result);
-//
-//                            Toast.makeText(context, "Registration successful", Toast.LENGTH_SHORT).show();
-//                            Bundle myBundle = new Bundle();
-//                            myBundle.putSerializable("accountinfo", (Serializable) myAccount);
-//                            Intent myIntent = new Intent(context, Home.class);
-//                            myIntent.putExtras(myBundle);
-//                            finish();
-//                            startActivity(myIntent);
-//
-//
-//                        } else {
-//                            //display some message here
-//                            Toast.makeText(context, "Account already exists", Toast.LENGTH_LONG).show();
-//
-//                        }
-//                        progressDialog.dismiss();
-//                    }
-//                });
-//
-//    }
 
     private boolean validForm(){
 

@@ -36,6 +36,7 @@ public  class  FireBaseCalls {
     public FireBaseCalls() {
     }
 
+    //sign up
     public  void  fireBaseRegistration(EditText editTextEmail,EditText editTextPassword,EditText age,EditText Name,EditText mobile,Spinner gender, final String profile_pic_path, final Context context, final boolean noProfilePictureFlag, final Activity Activity){
 
         //initializing firebase auth object
