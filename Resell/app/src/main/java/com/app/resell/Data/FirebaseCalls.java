@@ -38,7 +38,7 @@ public  class  FireBaseCalls {
     }
 
     //sign up
-    public  void  fireBaseRegistration(EditText editTextEmail,EditText editTextPassword,EditText age,EditText Name,EditText mobile,Spinner gender, final String profile_pic_path, final Context context, final boolean noProfilePictureFlag, final Activity Activity){
+    public  void  fireBaseRegistration(EditText editTextEmail,EditText editTextPassword,EditText age,EditText Name,EditText mobile,Spinner gender, final String country,final String profile_pic_path, final Context context, final boolean noProfilePictureFlag, final Activity Activity){
 
         //initializing firebase auth object
         firebaseAuth = FirebaseAuth.getInstance();
@@ -65,10 +65,10 @@ public  class  FireBaseCalls {
 
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             Account myAccount;
-                            if(!noProfilePictureFlag)
-                                myAccount = new Account(mName, mAge, mMobile, mGender, email,pic_path);
+                            if (!noProfilePictureFlag)
+                                myAccount = new Account(mName, mAge, mMobile, mGender, email, pic_path,country);
                             else
-                                myAccount = new Account(mName, mAge, mMobile, mGender, email, user.getPhotoUrl() + "");
+                                myAccount = new Account(mName, mAge, mMobile, mGender, email, user.getPhotoUrl() + "",country);
 
                             DatabaseReference x = databaseReference.child("users").child(user.getUid());
                             x.setValue(myAccount);
@@ -91,19 +91,21 @@ public  class  FireBaseCalls {
                             Toast.makeText(context, "Account already exists", Toast.LENGTH_LONG).show();
 
                         }
-                       progressDialog.dismiss();
+                        progressDialog.dismiss();
                     }
                 });
 
     }
 
-    public void AddFireBaseExtraInfo(String mName,String mAge,String mMobile,String mGender, String email ,String photoUrl, Activity Activity){
+
+    //add  extra info when sign in with google
+    public void AddFireBaseExtraInfo(String mName,String mAge,String mMobile,String mGender, String email ,String photoUrl, Activity Activity,String country){
 
         //initializing firebase auth object
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         user = firebaseAuth.getCurrentUser();
-        Account myAccount = new Account(mName, mAge, mMobile, mGender, email,photoUrl);
+        Account myAccount = new Account(mName, mAge, mMobile, mGender, email,photoUrl,country);
 
         DatabaseReference x=  databaseReference.child("users").child(user.getUid());
         x.setValue(myAccount);
@@ -116,4 +118,5 @@ public  class  FireBaseCalls {
         Activity.finish();
 
     }
+
 }

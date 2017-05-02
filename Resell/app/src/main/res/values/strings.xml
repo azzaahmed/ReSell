@@ -17,4 +17,5 @@
     <string name="profile">profile</string>
     <string name="title_activity_profile">Profile</string>
     <string name="mNumber">Mobile number</string>
+    <string name="country">Country</string>
 </resources>

@@ -43,6 +43,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -76,7 +77,7 @@ public class Profile extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private Button edit_profile;
     private DatabaseReference databaseReference;
-    private Account mmAccount;
+   // private Account mmAccount;
 
     private Account mAccount;
     private  boolean check_before_returnView=false;
@@ -159,7 +160,7 @@ public class Profile extends AppCompatActivity {
             fab.setLayoutParams(p);
             fab.setVisibility(View.GONE);
 
-            getUserInfoOwner(ProfileOwnerId);
+            getUserInfo(null, false, ProfileOwnerId);
             mobilelayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -174,15 +175,15 @@ public class Profile extends AppCompatActivity {
 
         else{
             if (user != null) {
-                Log.d("profile", "user not null get user info method");
+                Log.d("profile", "my profile");
 
-                getUserInfo(user);
+                getUserInfo(user,true,"");
                 //   getMyRequestedPosts();
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mmAccount == null)
-                            Log.d("azzaaa", "maccount check is null");
+//                        if (mmAccount == null)
+//                            Log.d("azzaaa", "maccount check is null");
 
                         if (pencil) {
                             editClicked();
@@ -270,19 +271,27 @@ public class Profile extends AppCompatActivity {
         mobileedit = (EditText) findViewById(R.id.mobileE);
 
     }
-    public void getUserInfo (FirebaseUser user) {
+    public void getUserInfo (FirebaseUser user, final boolean ViewMyProfile,String id) {
         final FirebaseUser currentUser = user;
         final Account[] account = new Account[1];
 
-        databaseReference.child("users").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+       String user_id;
+
+        if(ViewMyProfile)
+        user_id= currentUser.getUid();
+        else user_id=id;
+
+        databaseReference.child("users").child(user_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // You can get the text using getValue. Since the DataSnapshot is of the exact
                 // data you asked for (the node listName), when you use getValue you know it
                 // will return a String.
                 account[0] = dataSnapshot.getValue(Account.class);
-
+//*
+                if(ViewMyProfile)
            myAccount=dataSnapshot.getValue(Account.class);
+
                 if (account[0] != null) {
                     Log.d("My profile", "inside the data listener" + account[0].getName() + "  " + account[0].getAge() + "  " + account[0].getGender() + "   " + account[0].getMobile());
                     Log.d("My profile", "account from get user info method");
@@ -290,75 +299,29 @@ public class Profile extends AppCompatActivity {
                         collapsingToolbarLayout.setTitle(account[0].getName());
                     //  Name.setText(account[0].getName());
                     Log.d("My profile", "name not null");
-                    //collapsingToolbarLayout.setTitle(account[0].getName());
-                    //  age.setText(mAccount.getAge());
                     email.setText(account[0].getEmail());
                     //  gender.setText(mAccount.getGender());
-                    if (account[0].getImage_url() != null)
-                        Picasso.with(Profile.this)
-                                .load(account[0].getImage_url()).fit().centerCrop()
-                                .into(profile_image);
-                    else  Picasso.with(Profile.this)
-                            .load(currentUser.getPhotoUrl()).fit()
-                            .into(profile_image);
+                    if(ViewMyProfile) {
+                        if (account[0].getImage_url() != null)
+                            Picasso.with(Profile.this)
+                                    .load(account[0].getImage_url()).fit().centerCrop()
+                                    .into(profile_image);
 
-                    if (account[0].getAge() != null) age.setText(account[0].getAge());
-                    if (account[0].getMobile() != null) mobile.setText(account[0].getMobile());
-                    if (account[0].getGender() != null) gender.setText(account[0].getGender());
-
-                    mmAccount=account[0];
-
-                    progress.dismiss();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-        });
-
-    }
-    public void getUserInfoOwner(String ownerId){
-
-        final Account[] account = new Account[1];
-        String id=ownerId.toString();
-        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // You can get the text using getValue. Since the DataSnapshot is of the exact
-                // data you asked for (the node listName), when you use getValue you know it
-                // will return a String.
-                account[0] = dataSnapshot.getValue(Account.class);
-
-                // Now take the TextView for the list name
-                // and set it's value to listName.
-                Log.d("profile", "inside the data listener" + account[0].getName() + "  " + account[0].getAge() + "  " + account[0].getGender() + "   " + account[0].getMobile());
-
-                if (account[0] != null) {
-                    Log.d("profile", "account from get user info method");
-                    if (account[0].getName() != null)
-                        collapsingToolbarLayout.setTitle(account[0].getName());
-                    //   Name.setText(account[0].getName());
-                    Log.d("My profile", "name not null");
-                    // collapsingToolbarLayout.setTitle(account[0].getName());
-                    //  age.setText(mAccount.getAge());
-                    email.setText(account[0].getEmail());
-                    //  gender.setText(mAccount.getGender());
-                    if (account[0].getImage_url() != null) {
-                        Picasso.with(Profile.this)
-                                .load(account[0].getImage_url())
-                                .into(profile_image);
-
+                        else Picasso.with(Profile.this)
+                                .load(currentUser.getPhotoUrl()).fit()
+                                .into(profile_image);  //*hena lo mala2tsh sora fel database a5od bta3t google
+                    }else{
+                        if (account[0].getImage_url() != null)
+                            Picasso.with(Profile.this)
+                                    .load(account[0].getImage_url()).fit().centerCrop()
+                                    .into(profile_image);
                     }
-
                     if (account[0].getAge() != null) age.setText(account[0].getAge());
                     if (account[0].getMobile() != null) mobile.setText(account[0].getMobile());
                     if (account[0].getGender() != null) gender.setText(account[0].getGender());
 
-                    mmAccount = account[0];
-//                    check_before_returnView=true;
+                    //mmAccount=account[0];
+
                     progress.dismiss();
                 }
             }
@@ -369,7 +332,60 @@ public class Profile extends AppCompatActivity {
             }
 
         });
+
     }
+
+
+//    public void getUserInfoOwner(FirebaseUser user,boolean ViewMyProfile,String ownerId){
+//
+//        final Account[] account = new Account[1];
+//        String id=ownerId.toString();
+//        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // You can get the text using getValue. Since the DataSnapshot is of the exact
+//                // data you asked for (the node listName), when you use getValue you know it
+//                // will return a String.
+//                account[0] = dataSnapshot.getValue(Account.class);
+//
+//                // Now take the TextView for the list name
+//                // and set it's value to listName.
+//                Log.d("profile", "inside the data listener" + account[0].getName() + "  " + account[0].getAge() + "  " + account[0].getGender() + "   " + account[0].getMobile());
+//
+//                if (account[0] != null) {
+//                    Log.d("profile", "account from get user info method");
+//                    if (account[0].getName() != null)
+//                        collapsingToolbarLayout.setTitle(account[0].getName());
+//                    //   Name.setText(account[0].getName());
+//                    Log.d("My profile", "name not null");
+//                    // collapsingToolbarLayout.setTitle(account[0].getName());
+//                    //  age.setText(mAccount.getAge());
+//                    email.setText(account[0].getEmail());
+//                    //  gender.setText(mAccount.getGender());
+//                    if (account[0].getImage_url() != null) {
+//                        Picasso.with(Profile.this)
+//                                .load(account[0].getImage_url())
+//                                .into(profile_image);
+//
+//                    }
+//
+//                    if (account[0].getAge() != null) age.setText(account[0].getAge());
+//                    if (account[0].getMobile() != null) mobile.setText(account[0].getMobile());
+//                    if (account[0].getGender() != null) gender.setText(account[0].getGender());
+//
+//                    //mmAccount = account[0];
+////                    check_before_returnView=true;
+//                    progress.dismiss();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//
+//        });
+//    }
 //    public void getMyRequestedPosts (){
 //
 //        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -417,6 +433,7 @@ public class Profile extends AppCompatActivity {
 //
 //                });
 //    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -535,9 +552,7 @@ public class Profile extends AppCompatActivity {
         if(profilepic_attached) {
             UploadImage();
         }else {
-           Account myaccount = new Account(mname, mage, mmobile, mgender, memail, myAccount.getImage_url());
-            databaseReference.child("users").child(user.getUid()).setValue(myaccount);
-            returnprofileView();
+            firebasedit(false);
         }
 
     }
@@ -627,29 +642,41 @@ public class Profile extends AppCompatActivity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     profile_pic_path = taskSnapshot.getDownloadUrl() + "";
-                    firebasedit();
+                    firebasedit(true);
                 }
             });
 
-
-//            filepath.putFile(Uri.parse(base64Image)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-////                    Toast.makeText(NewProfile.this, "upload done. , "+taskSnapshot.getDownloadUrl(), Toast.LENGTH_LONG).show();
-//                    profile_pic_path = taskSnapshot.getDownloadUrl() + "";
-//                    firebasedit();
-//                }
-//            });
         }
     }
 
 
-    public  void firebasedit() {
 
-        Account myaccount = new Account(mname, mage, mmobile, mgender, memail, profile_pic_path );
-        databaseReference.child("users").child(user.getUid()).setValue(myaccount);
+
+    public  void firebasedit(boolean withImage) {
+        Account myaccount;
+
+
+        //mafrod ashel al space w a7ot country
+        if(withImage)
+         myaccount = new Account(mname, mage, mmobile, mgender, memail, profile_pic_path ," ");
+        else
+         myaccount = new Account(mname, mage, mmobile, mgender, memail, myAccount.getImage_url()," ");
+
+        //to set without id as field of account object
+//        databaseReference.child("users").child(user.getUid()).setValue(myaccount);
+
+        DatabaseReference x=  databaseReference.child("users").child(user.getUid());
+        x.setValue(myaccount);
+        // pushing key as id field in the table after pushing object
+        String key= x.getKey();
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", key);
+        x.updateChildren(result);
+
         progress.dismiss();
+
         returnprofileView();
+
 
     }
 

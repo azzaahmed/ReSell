@@ -232,6 +232,46 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
                         android:inputType="textPassword" />
                 </android.support.design.widget.TextInputLayout>
             </TableRow>
+
+
+
+            <TableRow
+                android:layout_weight="1"
+                android:layout_marginBottom="5dp"
+                android:layout_height="40dp"
+                android:layout_width="match_parent">
+
+                <ImageView
+                    android:layout_marginRight="20dp"
+                    android:id="@+id/row_icon_from"
+                    android:adjustViewBounds="true"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/google_maps"/>
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_country"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="16dp"
+                    android:paddingLeft="16dp">
+
+                <EditText
+                    android:id="@+id/pick_country_from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="true"
+                    android:layout_weight="1"
+                    android:hint="@string/country"
+                   />
+                </android.support.design.widget.TextInputLayout>
+            </TableRow>
+
+
             <TableRow
                 android:layout_weight="1"
                 android:layout_marginBottom="8dp"

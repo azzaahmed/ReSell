@@ -46,5 +46,6 @@ dependencies {
     compile 'com.firebaseui:firebase-ui:0.2.2'
     compile 'com.firebase:firebase-client-android:2.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.mukesh:countrypicker:1.1.5'
 }
 apply plugin: 'com.google.gms.google-services'

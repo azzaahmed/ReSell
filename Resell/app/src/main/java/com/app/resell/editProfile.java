@@ -2,12 +2,15 @@ package com.app.resell;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -16,6 +19,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mukesh.countrypicker.fragments.CountryPicker;
+import com.mukesh.countrypicker.interfaces.CountryPickerListener;
+import com.mukesh.countrypicker.models.Country;
 
 // when first sign in with google to take the extra information
 public class editProfile extends AppCompatActivity{
@@ -36,6 +42,14 @@ public class editProfile extends AppCompatActivity{
     private DatabaseReference databaseReference;
     private FireBaseCalls FireBaseCalls;
     FirebaseUser user;
+
+    //select country
+    private TextInputLayout input_layout_country;
+    private EditText country_EditText_from;
+    private CountryPicker mCountryPicker;
+    private ImageView mCountryFlagImageView_from;
+    private String country;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +71,12 @@ public class editProfile extends AppCompatActivity{
         mobile = (EditText) findViewById(R.id.mobile);
 
         FireBaseCalls= new FireBaseCalls();
+
+        //select country
+        country_EditText_from = (EditText) findViewById(R.id.pick_country_from);
+        mCountryFlagImageView_from = (ImageView) findViewById(R.id.row_icon_from);
+        mCountryPicker = CountryPicker.newInstance("Select Country");
+        setListener();
     }
 
     private void edit(){
@@ -107,6 +127,11 @@ public class editProfile extends AppCompatActivity{
                 return;
             }
 
+            if(TextUtils.isEmpty(country_EditText_from.getText().toString().trim())){
+                Toast.makeText(this,"Please enter your country",Toast.LENGTH_LONG).show();
+                return;
+
+            }
 //    if(TextUtils.isEmpty(msmoker)){
 //        Toast.makeText(this,"smoker or non-smoker",Toast.LENGTH_LONG).show();
 //        return;
@@ -114,7 +139,7 @@ public class editProfile extends AppCompatActivity{
 //    }
         }
 
-        FireBaseCalls.AddFireBaseExtraInfo(mname, mage, mmobile, mgender, user.getEmail(), user.getPhotoUrl() + "", this);
+        FireBaseCalls.AddFireBaseExtraInfo(mname, mage, mmobile, mgender, user.getEmail(), user.getPhotoUrl() + "", this,country);
 
     }
 
@@ -142,5 +167,34 @@ public class editProfile extends AppCompatActivity{
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+
+    //select country
+    private void setListener() {
+        mCountryPicker.setListener(new CountryPickerListener() {
+            @Override
+            public void onSelectCountry(String name, String code, String dialCode,
+                                        int flagDrawableResID) {
+                country_EditText_from.setText(name);
+                mCountryFlagImageView_from.setImageResource(flagDrawableResID);
+
+            }
+        });
+        country_EditText_from.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountryPicker.show(editProfile.this.getSupportFragmentManager(), "COUNTRY_PICKER");
+            }
+        });
+
+        country= getUserCountryInfo();
+    }
+
+    private String getUserCountryInfo() {
+        Country country = mCountryPicker.getUserCountryInfo(editProfile.this);
+        mCountryFlagImageView_from.setImageResource(country.getFlag());
+        country_EditText_from.setText(country.getName());
+        return country.getName();
     }
 }

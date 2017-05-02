@@ -29,6 +29,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.mukesh.countrypicker.fragments.CountryPicker;
+import com.mukesh.countrypicker.interfaces.CountryPickerListener;
+import com.mukesh.countrypicker.models.Country;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -58,6 +61,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     private TextInputLayout inputLayoutEmail;
     private TextInputLayout inputLayoutPass;
     private TextInputLayout inputLayoutGender;
+    private TextInputLayout input_layout_country;
 
     //defining view objects
     private EditText editTextEmail;
@@ -72,6 +76,13 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     private FireBaseCalls FireBaseCalls;
     private Activity Activity;
+
+    //select country
+    private EditText country_EditText_from;
+    private CountryPicker mCountryPicker;
+    private ImageView mCountryFlagImageView_from;
+    private String country;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +107,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         inputLayoutEmail = (TextInputLayout) findViewById(R.id.input_layout_email);
         inputLayoutPass = (TextInputLayout) findViewById(R.id.input_layout_pass);
         inputLayoutGender = (TextInputLayout) findViewById(R.id.input_layout_Gender);
+        input_layout_country=(TextInputLayout) findViewById(R.id.input_layout_country);
         // ************************************************************************//
 
 
@@ -116,6 +128,13 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         FireBaseCalls= new FireBaseCalls();
         Activity = this;
+
+
+        //select country
+        country_EditText_from = (EditText) findViewById(R.id.pick_country_from);
+        mCountryFlagImageView_from = (ImageView) findViewById(R.id.row_icon_from);
+        mCountryPicker = CountryPicker.newInstance("Select Country");
+        setListener();
     }
     @Override
     public void onStart() {
@@ -160,7 +179,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             UploadImage();
         }
         else{
-          FireBaseCalls.fireBaseRegistration(editTextEmail, editTextPassword, age, Name, mobile, gender, " ", getApplicationContext(), true,Activity);
+          FireBaseCalls.fireBaseRegistration(editTextEmail, editTextPassword, age, Name, mobile, gender,country, " ", getApplicationContext(), true,Activity);
 
         }
     }
@@ -219,7 +238,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     profile_pic_path = taskSnapshot.getDownloadUrl()+"";
-                    FireBaseCalls. fireBaseRegistration( editTextEmail,editTextPassword,age, Name,mobile, gender,profile_pic_path,getApplicationContext(),false,Activity);
+                    FireBaseCalls. fireBaseRegistration( editTextEmail,editTextPassword,age, Name,mobile, gender,country,profile_pic_path,getApplicationContext(),false,Activity);
                 }
             });
 
@@ -295,6 +314,13 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         }else{
             inputLayoutGender.setErrorEnabled(false);
         }
+        if(country_EditText_from.getText().toString().trim().isEmpty()){
+            input_layout_country.setError("Enter your country");
+            requestFocus(country_EditText_from);
+            counter ++;
+        }else{
+            input_layout_country.setErrorEnabled(false);
+        }
 
         if(counter == 0){
             return true;
@@ -316,5 +342,36 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             return false;
         }
         return !TextUtils.isEmpty(target) && Patterns.PHONE.matcher(target).matches();
+    }
+
+
+
+    //select country
+    private void setListener() {
+        mCountryPicker.setListener(new CountryPickerListener() {
+            @Override
+            public void onSelectCountry(String name, String code, String dialCode,
+                                        int flagDrawableResID) {
+                country_EditText_from.setText(name);
+                mCountryFlagImageView_from.setImageResource(flagDrawableResID);
+
+            }
+        });
+        country_EditText_from.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountryPicker.show(SignUp.this.getSupportFragmentManager(), "COUNTRY_PICKER");
+            }
+        });
+
+       country= getUserCountryInfo();
+    }
+
+    private String getUserCountryInfo() {
+        Country country = mCountryPicker.getUserCountryInfo(SignUp.this);
+        mCountryFlagImageView_from.setImageResource(country.getFlag());
+
+        country_EditText_from.setText(country.getName());
+        return country.getName();
     }
 }
