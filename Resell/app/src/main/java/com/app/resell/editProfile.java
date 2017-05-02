@@ -178,7 +178,8 @@ public class editProfile extends AppCompatActivity{
                                         int flagDrawableResID) {
                 country_EditText_from.setText(name);
                 mCountryFlagImageView_from.setImageResource(flagDrawableResID);
-
+                country= name;
+                mCountryPicker.getDialog().dismiss();
             }
         });
         country_EditText_from.setOnClickListener(new View.OnClickListener() {

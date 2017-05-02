@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +40,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.mukesh.countrypicker.fragments.CountryPicker;
+import com.mukesh.countrypicker.interfaces.CountryPickerListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -70,6 +73,7 @@ public class Profile extends AppCompatActivity {
     TextView gender;
     TextView email;
     TextView mobile;
+    TextView Country;
     ImageView profile_image;
     RelativeLayout mobilelayout;
 
@@ -96,7 +100,7 @@ public class Profile extends AppCompatActivity {
     String mage;
     String mname;
     String mgender,memail;
-    String mmobile,oldurl;
+    String mmobile,oldurl,mcountry;
 
     EditText Nameedit ;
     EditText  ageedit;
@@ -104,9 +108,14 @@ public class Profile extends AppCompatActivity {
     Spinner genderedit;
     EditText mobileedit;
 
-
     FirebaseUser user;
     boolean pencil;
+
+    //select country
+    private TextInputLayout input_layout_country;
+    private EditText country_EditText_from;
+    private CountryPicker mCountryPicker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +140,7 @@ public class Profile extends AppCompatActivity {
         email = (TextView) findViewById(R.id.Email);
         gender = (TextView)findViewById(R.id.Gender);
         mobile = (TextView) findViewById(R.id.mobile);
+        Country = (TextView) findViewById(R.id.country);
 
         edit_profile = (Button) findViewById(R.id.edit_profile);
         profile_image = (ImageView) findViewById(R.id.profileImage);
@@ -147,6 +157,7 @@ public class Profile extends AppCompatActivity {
 
         pencil=true;
         profile_imageedit=(CircleImageView)findViewById(R.id.profile_imageedit);
+
 
         if (displayOwner) {
             edit_profile.setVisibility(View.GONE);
@@ -270,6 +281,13 @@ public class Profile extends AppCompatActivity {
 
         mobileedit = (EditText) findViewById(R.id.mobileE);
 
+        //country
+        country_EditText_from = (EditText) findViewById(R.id.pick_country_from);
+        mCountryPicker = CountryPicker.newInstance("Select Country");
+        setListener();
+
+
+
     }
     public void getUserInfo (FirebaseUser user, final boolean ViewMyProfile,String id) {
         final FirebaseUser currentUser = user;
@@ -319,7 +337,7 @@ public class Profile extends AppCompatActivity {
                     if (account[0].getAge() != null) age.setText(account[0].getAge());
                     if (account[0].getMobile() != null) mobile.setText(account[0].getMobile());
                     if (account[0].getGender() != null) gender.setText(account[0].getGender());
-
+                    if (account[0].getCountry() != null) Country.setText(account[0].getCountry());
                     //mmAccount=account[0];
 
                     progress.dismiss();
@@ -463,13 +481,13 @@ public class Profile extends AppCompatActivity {
         RelativeLayout ageLayout=(RelativeLayout)findViewById(R.id.agelayout);
         RelativeLayout emailLayout=(RelativeLayout)findViewById(R.id.emaillayout);
         RelativeLayout genderLayout=(RelativeLayout)findViewById(R.id.genderlayout);
-
+        RelativeLayout countryLayout=(RelativeLayout)findViewById(R.id.countryLayout);
         RelativeLayout mobileLayout=(RelativeLayout)findViewById(R.id.mobilelayout);
 
         RelativeLayout editageLayout=(RelativeLayout)findViewById(R.id.editagelayout);
         RelativeLayout editemailLayout=(RelativeLayout)findViewById(R.id.emaillayoutedit);
         RelativeLayout editgenderLayout=(RelativeLayout)findViewById(R.id.editgenderlayout);
-
+        RelativeLayout editCountryLayout=(RelativeLayout)findViewById(R.id.editCountrylayout);
         RelativeLayout editmobileLayout=(RelativeLayout)findViewById(R.id.editmobilelayout);
 
         View dividerAfterName=findViewById(R.id.dividerAfterName);
@@ -479,6 +497,7 @@ public class Profile extends AppCompatActivity {
         emailLayout.setVisibility(View.GONE);
         genderLayout.setVisibility(View.GONE);
         mobileLayout.setVisibility(View.GONE);
+        countryLayout.setVisibility(View.GONE);
 
         RelativeLayout namelayout=(RelativeLayout)findViewById(R.id.namelayout);
         namelayout.setVisibility(View.VISIBLE);
@@ -488,14 +507,14 @@ public class Profile extends AppCompatActivity {
         editemailLayout.setVisibility(View.VISIBLE);
         editmobileLayout.setVisibility(View.VISIBLE);
         editgenderLayout.setVisibility(View.VISIBLE);
-
+        editCountryLayout.setVisibility(View.VISIBLE);
 
         Nameedit.setHint(myAccount.getName());
         ageedit.setHint(myAccount.getAge());
         //  genderedit.set.setHint(myAccount.getGender());
         emailedit.setHint(myAccount.getEmail());
         mobileedit.setHint(myAccount.getMobile());
-
+        country_EditText_from.setHint(myAccount.getCountry());
     }
     public void saveEdit() throws IOException {
 
@@ -505,12 +524,14 @@ public class Profile extends AppCompatActivity {
         mmobile=mobileedit.getText().toString().trim();
         mgender=genderedit.getSelectedItem().toString();
         memail=emailedit.getText().toString().trim();
+        mcountry=country_EditText_from.getText().toString().trim();
 
         if(myAccount!=null) {
             if (mage.isEmpty()) mage = myAccount.getAge();
             if (mname.isEmpty()) mname = myAccount.getName();
             if (mmobile.isEmpty()) mmobile = myAccount.getMobile();
             if(memail.isEmpty())memail=myAccount.getEmail();
+            if(mcountry.isEmpty())mcountry=myAccount.getCountry();
 
             mgender=genderedit.getSelectedItem().toString();
             if(mgender.equals("Gender")){
@@ -539,7 +560,10 @@ public class Profile extends AppCompatActivity {
                 return;
 
             }
-
+            if(TextUtils.isEmpty(mcountry)){
+                Toast.makeText(this,"Please enter your country",Toast.LENGTH_LONG).show();
+                return;
+            }
             if(TextUtils.isEmpty(mname)&&user.getDisplayName()==null){
                 Toast.makeText(this,"Please enter your name",Toast.LENGTH_LONG).show();
                 return;
@@ -560,13 +584,13 @@ public class Profile extends AppCompatActivity {
         RelativeLayout ageLayout=(RelativeLayout)findViewById(R.id.agelayout);
         RelativeLayout emailLayout=(RelativeLayout)findViewById(R.id.emaillayout);
         RelativeLayout genderLayout=(RelativeLayout)findViewById(R.id.genderlayout);
-
+        RelativeLayout countryLayout=(RelativeLayout)findViewById(R.id.countryLayout);
         RelativeLayout mobileLayout=(RelativeLayout)findViewById(R.id.mobilelayout);
 
         RelativeLayout editageLayout=(RelativeLayout)findViewById(R.id.editagelayout);
         RelativeLayout editemailLayout=(RelativeLayout)findViewById(R.id.emaillayoutedit);
         RelativeLayout editgenderLayout=(RelativeLayout)findViewById(R.id.editgenderlayout);
-
+        RelativeLayout editCountryLayout=(RelativeLayout)findViewById(R.id.editCountrylayout);
         RelativeLayout editmobileLayout=(RelativeLayout)findViewById(R.id.editmobilelayout);
         View dividerAfterName=findViewById(R.id.dividerAfterName);
         dividerAfterName.setVisibility(View.GONE);
@@ -575,6 +599,7 @@ public class Profile extends AppCompatActivity {
         emailLayout.setVisibility(View.VISIBLE);
         genderLayout.setVisibility(View.VISIBLE);
         mobileLayout.setVisibility(View.VISIBLE);
+        countryLayout.setVisibility(View.VISIBLE);
 
         RelativeLayout namelayout=(RelativeLayout)findViewById(R.id.namelayout);
         namelayout.setVisibility(View.GONE);
@@ -584,7 +609,7 @@ public class Profile extends AppCompatActivity {
         editemailLayout.setVisibility(View.GONE);
         editmobileLayout.setVisibility(View.GONE);
         editgenderLayout.setVisibility(View.GONE);
-
+        editCountryLayout.setVisibility(View.GONE);
     }
 
     // *********************** upload image ***********************************//
@@ -658,9 +683,9 @@ public class Profile extends AppCompatActivity {
 
         //mafrod ashel al space w a7ot country
         if(withImage)
-         myaccount = new Account(mname, mage, mmobile, mgender, memail, profile_pic_path ," ");
+         myaccount = new Account(mname, mage, mmobile, mgender, memail, profile_pic_path ,mcountry);
         else
-         myaccount = new Account(mname, mage, mmobile, mgender, memail, myAccount.getImage_url()," ");
+         myaccount = new Account(mname, mage, mmobile, mgender, memail, myAccount.getImage_url(),mcountry);
 
         //to set without id as field of account object
 //        databaseReference.child("users").child(user.getUid()).setValue(myaccount);
@@ -676,6 +701,27 @@ public class Profile extends AppCompatActivity {
         progress.dismiss();
 
         returnprofileView();
+
+
+    }
+    //select country
+    private void setListener() {
+        mCountryPicker.setListener(new CountryPickerListener() {
+            @Override
+            public void onSelectCountry(String name, String code, String dialCode,
+                                        int flagDrawableResID) {
+                country_EditText_from.setText(name);
+
+                mcountry= name;
+                mCountryPicker.getDialog().dismiss();
+            }
+        });
+        country_EditText_from.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountryPicker.show(Profile.this.getSupportFragmentManager(), "COUNTRY_PICKER");
+            }
+        });
 
 
     }

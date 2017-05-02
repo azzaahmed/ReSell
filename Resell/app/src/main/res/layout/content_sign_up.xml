@@ -259,7 +259,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
 
                 <EditText
                     android:id="@+id/pick_country_from"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:cursorVisible="false"
                     android:focusable="false"
