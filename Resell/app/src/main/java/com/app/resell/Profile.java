@@ -680,8 +680,6 @@ public class Profile extends AppCompatActivity {
     public  void firebasedit(boolean withImage) {
         Account myaccount;
 
-
-        //mafrod ashel al space w a7ot country
         if(withImage)
          myaccount = new Account(mname, mage, mmobile, mgender, memail, profile_pic_path ,mcountry);
         else

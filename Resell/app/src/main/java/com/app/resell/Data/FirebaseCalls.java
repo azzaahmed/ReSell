@@ -6,19 +6,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.app.resell.Account;
 import com.app.resell.Home;
+import com.app.resell.Item;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -117,6 +122,78 @@ public  class  FireBaseCalls {
         // startActivity(new Intent(this, Profile.class));
         Activity.finish();
 
+    }
+
+    public void AddItem(String description,String price, String size,String profile_pic_path, final Context context, final Activity Activity){
+        firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        user = firebaseAuth.getCurrentUser();
+        progressDialog = new ProgressDialog(Activity);
+        progressDialog.setMessage("Registering Please Wait...");
+        progressDialog.show();
+        final String[] country = new String[1];
+        if(user!=null){
+            final Item item = new Item(description,size,price,profile_pic_path);
+            databaseReference.child("users").child(user.getUid()).child("country").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    country[0] = (String) snapshot.getValue();
+                    DatabaseReference x = databaseReference.child("items").child(user.getUid()).push();
+                    x.setValue(item);
+                    String key = x.getKey();
+                    HashMap<String, Object> result = new HashMap<>();
+                    result.put("item_id", key);
+                    result.put("country", country[0]);
+                    x.updateChildren(result);
+
+                    progressDialog.dismiss();
+                    Toast.makeText(Activity, "Item saved", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+
+            });
+
+            //   startActivity(new Intent(this, Home.class).putExtra("mAccount",myaccount));
+     //       Activity.startActivity(new Intent(Activity, myOfferedPosts.class));
+        }
+
+
+    }
+
+    public Account RetrieveUser(String user_id){
+
+
+
+            final Account[] account = new Account[1];
+
+
+
+            databaseReference.child("users").child(user_id).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // You can get the text using getValue. Since the DataSnapshot is of the exact
+                    // data you asked for (the node listName), when you use getValue you know it
+                    // will return a String.
+                    account[0] = dataSnapshot.getValue(Account.class);
+//*
+
+                    if (account[0] != null) {
+                        Log.d("My profile", "inside the data listener" + account[0].getName() + "  " + account[0].getAge() + "  " + account[0].getGender() + "   " + account[0].getMobile());
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+
+            });
+        return account[0];
     }
 
 }

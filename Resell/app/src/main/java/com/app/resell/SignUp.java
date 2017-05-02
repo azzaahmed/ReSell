@@ -32,6 +32,7 @@ import com.google.firebase.storage.UploadTask;
 import com.mukesh.countrypicker.fragments.CountryPicker;
 import com.mukesh.countrypicker.interfaces.CountryPickerListener;
 import com.mukesh.countrypicker.models.Country;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -207,7 +208,11 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            imageView_circle.setImageURI(imageUri);
+
+           // imageView_circle.setImageURI(imageUri);
+            Picasso.with(SignUp.this)
+                    .load(imageUri).fit().centerCrop()
+                    .into(imageView_circle);
             profilePic_attached = true;
 
         }

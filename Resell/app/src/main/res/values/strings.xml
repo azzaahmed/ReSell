@@ -18,4 +18,10 @@
     <string name="title_activity_profile">Profile</string>
     <string name="mNumber">Mobile number</string>
     <string name="country">Country</string>
+    <string name="title_activity_add_item">AddItem</string>
+    <string name="add_item">Add item</string>
+    <string name="price">Price:</string>
+    <string name="description">Description</string>
+    <string name="size">size</string>
+    <string name="title_activity_item_details">itemDetails</string>
 </resources>
