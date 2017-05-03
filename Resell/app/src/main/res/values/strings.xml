@@ -25,4 +25,6 @@
     <string name="size">size</string>
     <string name="title_activity_item_details">itemDetails</string>
     <string name="item_image">Item image</string>
+    <string name="action_share">Share</string>
+
 </resources>
