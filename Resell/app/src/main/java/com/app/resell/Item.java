@@ -12,6 +12,16 @@ public class Item implements Serializable {
     private String price;
     private String imageUrl;
     private  String userId;
+    private String item_id;
+
+    public String getItem_id() {
+        return item_id;
+    }
+
+    public void setItem_id(String item_id) {
+        this.item_id = item_id;
+    }
+
 
     public String getCountry() {
         return country;

@@ -151,8 +151,8 @@ public class Profile extends AppCompatActivity {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         Intent intent = getIntent();
         //from post to get the post owner profile
-        displayOwner = intent.getBooleanExtra("displayCarOwner", false);
-        ProfileOwnerId = intent.getStringExtra("CarOwnerId");
+        displayOwner = intent.getBooleanExtra("displayOwner", false);
+        ProfileOwnerId = intent.getStringExtra("OwnerId");
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         pencil=true;

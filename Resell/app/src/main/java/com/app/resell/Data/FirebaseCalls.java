@@ -71,9 +71,9 @@ public  class  FireBaseCalls {
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             Account myAccount;
                             if (!noProfilePictureFlag)
-                                myAccount = new Account(mName, mAge, mMobile, mGender, email, pic_path,country);
+                                myAccount = new Account(mName, mAge, mMobile, mGender, email, pic_path, country);
                             else
-                                myAccount = new Account(mName, mAge, mMobile, mGender, email, user.getPhotoUrl() + "",country);
+                                myAccount = new Account(mName, mAge, mMobile, mGender, email, user.getPhotoUrl() + "", country);
 
                             DatabaseReference x = databaseReference.child("users").child(user.getUid());
                             x.setValue(myAccount);
@@ -135,15 +135,18 @@ public  class  FireBaseCalls {
         if(user!=null){
             final Item item = new Item(description,size,price,profile_pic_path);
             databaseReference.child("users").child(user.getUid()).child("country").addValueEventListener(new ValueEventListener() {
-                @Override
+
+                    @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     country[0] = (String) snapshot.getValue();
-                    DatabaseReference x = databaseReference.child("items").child(user.getUid()).push();
-                    x.setValue(item);
+                   // DatabaseReference x = databaseReference.child("items").child(user.getUid()).push();
+                        DatabaseReference x = databaseReference.child("items").push();
+                        x.setValue(item);
                     String key = x.getKey();
                     HashMap<String, Object> result = new HashMap<>();
                     result.put("item_id", key);
                     result.put("country", country[0]);
+                        result.put("userId",user.getUid());
                     x.updateChildren(result);
 
                     progressDialog.dismiss();
