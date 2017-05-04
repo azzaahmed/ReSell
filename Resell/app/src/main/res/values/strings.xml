@@ -26,5 +26,8 @@
     <string name="title_activity_item_details">itemDetails</string>
     <string name="item_image">Item image</string>
     <string name="action_share">Share</string>
+    <string name="title_activity_my_items">myItems</string>
+    <string name="delete">delete</string>
+    <string name="items">items</string>
 
 </resources>
