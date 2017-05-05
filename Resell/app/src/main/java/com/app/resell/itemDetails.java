@@ -11,7 +11,6 @@ import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -20,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class itemDetails extends AppCompatActivity {
-Item clickedItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,10 +29,7 @@ Item clickedItem;
         final Activity activity=this;
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        Intent intent = this.getIntent();
 
-        clickedItem= (Item) intent.getSerializableExtra("selectedItem");
-        Log.v("ddd", "ddd " + clickedItem.getImageUrl());
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,10 +43,6 @@ Item clickedItem;
             }
         });
 
-//
-//        .setType("text/plain")
-//                .setText("Some sample text")
-//                .addStream(Uri.parse(clickedItem.getImageUrl()))
 
     }
 

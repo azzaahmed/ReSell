@@ -90,4 +90,10 @@ public class HomeFragment extends Fragment {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }
