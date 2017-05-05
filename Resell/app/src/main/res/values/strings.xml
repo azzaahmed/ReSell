@@ -29,5 +29,6 @@
     <string name="title_activity_my_items">myItems</string>
     <string name="delete">delete</string>
     <string name="items">items</string>
+    <string name="title_widget">Resell</string>
 
 </resources>
