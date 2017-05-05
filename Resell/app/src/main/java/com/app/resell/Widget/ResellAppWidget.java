@@ -1,20 +1,22 @@
 package com.app.resell.Widget;
 
 /**
- * Created by azza ahmed on 5/5/2017.
+ * Implementation of App Widget functionality.
  */
-public class WidgetProvider{
+public class ResellAppWidget{
+//        extends AppWidgetProvider {
 //
-//} extends AppWidgetProvider {
+//
+//    //is called when a new widget is created as well as every update interval is reached I set it to 30 minute
 //    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 //        // Perform this loop procedure for each App Widget that belongs to this provider
 //        for (int appWidgetId : appWidgetIds) {
-//            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+//            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_detail);
 //
 //            // Create an Intent to launch MainActivity
 //            Intent intent = new Intent(context, MainActivity.class);
 //            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-//            views.setOnClickPendingIntent(R.id.widgetFrame, pendingIntent);
+//            views.setOnClickPendingIntent(R.id.widget, pendingIntent);
 //
 //            // Set up the collection
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -23,9 +25,9 @@ public class WidgetProvider{
 //                setRemoteAdapterV11(context, views);
 //            }
 //            boolean useDetailActivity = context.getResources()
-//                    .getBoolean(R.bool.use_activity);
+//                    .getBoolean(R.bool.use_detail_activity);
 //            Intent clickIntentTemplate = useDetailActivity
-//                    ? new Intent(context, itemDetails.class)
+//                    ? new Intent(context, DetailsActivity.class)
 //                    : new Intent(context, MainActivity.class);
 //
 //            PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)
@@ -58,7 +60,7 @@ public class WidgetProvider{
 //    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 //    private void setRemoteAdapter(Context context, @NonNull final RemoteViews views) {
 //        views.setRemoteAdapter(R.id.widget_list,
-//                new Intent(context, WidgetRemoteViewsService.class));
+//                new Intent(context, DetailWidgetRemoteViewsService.class));
 //    }
 //
 //    /**
@@ -69,6 +71,8 @@ public class WidgetProvider{
 //    @SuppressWarnings("deprecation")
 //    private void setRemoteAdapterV11(Context context, @NonNull final RemoteViews views) {
 //        views.setRemoteAdapter(0, R.id.widget_list,
-//                new Intent(context, WidgetRemoteViewsService.class));
+//                new Intent(context, DetailWidgetRemoteViewsService.class));
 //    }
 }
+
+

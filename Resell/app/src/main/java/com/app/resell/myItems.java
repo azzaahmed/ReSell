@@ -1,9 +1,10 @@
 package com.app.resell;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,22 +40,14 @@ public class myItems extends AppCompatActivity {
         setContentView(R.layout.activity_my_items);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         progress = new ProgressDialog(this);
-        progress.setMessage("loading.....");
-        progress.show();
-        progress.setCancelable(false);
-
+        if(isOnline()) {
+            progress.setMessage("loading.....");
+            progress.show();
+            progress.setCancelable(false);
+        }
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mAdapter = new myItemAdapter(itemsList,this);
         recyclerView.setHasFixedSize(true);
@@ -79,8 +73,9 @@ public class myItems extends AppCompatActivity {
                })
        );
 
-
+if(isOnline())
           getMyItems();
+        else Toast.makeText(this, "no internet connection", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -100,8 +95,8 @@ public void getMyItems(){
         @Override
         public void onDataChange(DataSnapshot snapshot) {
             itemsList.clear();
-            Log.e("Count " ,""+snapshot.getChildrenCount());
-            for (DataSnapshot postSnapshot: snapshot.getChildren()) {
+            Log.e("Count ", "" + snapshot.getChildrenCount());
+            for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                 Item item = postSnapshot.getValue(Item.class);
                 Log.e("Get Data", item.getDescription());
 
@@ -118,12 +113,17 @@ public void getMyItems(){
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-            Log.e("The read failed: " ,databaseError.getMessage());
+            Log.e("The read failed: ", databaseError.getMessage());
         }
 
 
     });
 
 }
-
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
 }

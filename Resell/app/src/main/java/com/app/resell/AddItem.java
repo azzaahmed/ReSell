@@ -64,6 +64,7 @@ public class AddItem extends AppCompatActivity  implements View.OnClickListener 
         setContentView(R.layout.activity_add_item);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         description=(EditText)findViewById(R.id.description);
         price=(EditText)findViewById(R.id.price);

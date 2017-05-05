@@ -1,9 +1,12 @@
 package com.app.resell;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -131,9 +134,12 @@ public class Profile extends AppCompatActivity {
         collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.toolbar_layout);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         progress = new ProgressDialog(this);
-        progress.setMessage("Loading.....");
-        progress.show();
-        progress.setCancelable(false);
+        if(isOnline()) {
+            progress.setMessage("Loading.....");
+            progress.show();
+            progress.setCancelable(false);
+        }else Toast.makeText(this,"no internet connection",Toast.LENGTH_LONG).show();
+
         mobilelayout = (RelativeLayout) findViewById(R.id.mobilelayout);
       //  Name = (TextView) findViewById(R.id.Name);
         age = (TextView) findViewById(R.id.age);
@@ -160,6 +166,7 @@ public class Profile extends AppCompatActivity {
 
 
         if (displayOwner) {
+
             edit_profile.setVisibility(View.GONE);
             requestedRidesButton.setVisibility(View.GONE);
             offeredRidesButton.setVisibility(View.GONE);
@@ -354,108 +361,10 @@ public class Profile extends AppCompatActivity {
     }
 
 
-//    public void getUserInfoOwner(FirebaseUser user,boolean ViewMyProfile,String ownerId){
-//
-//        final Account[] account = new Account[1];
-//        String id=ownerId.toString();
-//        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // You can get the text using getValue. Since the DataSnapshot is of the exact
-//                // data you asked for (the node listName), when you use getValue you know it
-//                // will return a String.
-//                account[0] = dataSnapshot.getValue(Account.class);
-//
-//                // Now take the TextView for the list name
-//                // and set it's value to listName.
-//                Log.d("profile", "inside the data listener" + account[0].getName() + "  " + account[0].getAge() + "  " + account[0].getGender() + "   " + account[0].getMobile());
-//
-//                if (account[0] != null) {
-//                    Log.d("profile", "account from get user info method");
-//                    if (account[0].getName() != null)
-//                        collapsingToolbarLayout.setTitle(account[0].getName());
-//                    //   Name.setText(account[0].getName());
-//                    Log.d("My profile", "name not null");
-//                    // collapsingToolbarLayout.setTitle(account[0].getName());
-//                    //  age.setText(mAccount.getAge());
-//                    email.setText(account[0].getEmail());
-//                    //  gender.setText(mAccount.getGender());
-//                    if (account[0].getImage_url() != null) {
-//                        Picasso.with(Profile.this)
-//                                .load(account[0].getImage_url())
-//                                .into(profile_image);
-//
-//                    }
-//
-//                    if (account[0].getAge() != null) age.setText(account[0].getAge());
-//                    if (account[0].getMobile() != null) mobile.setText(account[0].getMobile());
-//                    if (account[0].getGender() != null) gender.setText(account[0].getGender());
-//
-//                    //mmAccount = account[0];
-////                    check_before_returnView=true;
-//                    progress.dismiss();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//
-//        });
-//    }
-//    public void getMyRequestedPosts (){
-//
-//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-//        final FirebaseUser currentUser= firebaseAuth.getCurrentUser();
-//        databaseReference.child("posts").addChildEventListener(
-//                new com.google.firebase.database.ChildEventListener() {
-//                    @Override
-//                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                        // offeredPost post = dataSnapshot..getValue(offeredPost.class);
-//                        //.getValue(offeredPost.class);
-//                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-//                            offeredPost post = postSnapshot.getValue(offeredPost.class);
-//                            //postSnapshot.getKey()  post key bta3 al post nafso
-//                            if (post.getRequestedByUser_id().equals(currentUser.getUid())) {
-//                                RequestedPostsList.add(post);
-//
-//                            }
-//                        }
-//                        progress.dismiss();
-//
-//                    }
-//
-//                    @Override
-//                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-////                        offeredPost post = dataSnapshot.getValue(offeredPost.class);
-////                        Log.d("My profile","remove post "+post.getDestinationName());
-////                        RequestedPostsList.remove(post);
-//                    }
-//
-//                    @Override
-//                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//
-//                });
-//    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+       if(!displayOwner)
         getMenuInflater().inflate(R.menu.menu_profile, menu);
 
         return true;
@@ -727,5 +636,10 @@ public class Profile extends AppCompatActivity {
 
 
 
-
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
 }

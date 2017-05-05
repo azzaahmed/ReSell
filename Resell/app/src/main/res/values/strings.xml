@@ -30,5 +30,7 @@
     <string name="delete">delete</string>
     <string name="items">items</string>
     <string name="title_widget">Resell</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>

@@ -2,9 +2,12 @@ package com.app.resell;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -164,7 +167,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    private void registerUser(){
+    private void registerUser() {
 
 //            final String mgender=gender.getText().toString().trim();
 //            final String msmoker=smoker.getText().toString().trim();
@@ -174,17 +177,17 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 //                Toast.makeText(this,"you are smoker or not",Toast.LENGTH_LONG).show();
 //                return;
 //            }
+        if (isOnline()) {
+            if (profilePic_attached) {
+                //UploadImage call fireBaseRegistration inside it but passes the image_path and boolean of false as there is an image
+                UploadImage();
+            } else {
+                FireBaseCalls.fireBaseRegistration(editTextEmail, editTextPassword, age, Name, mobile, gender, country, " ", getApplicationContext(), true, Activity);
 
-        if(profilePic_attached) {
-            //UploadImage call fireBaseRegistration inside it but passes the image_path and boolean of false as there is an image
-            UploadImage();
+            }
         }
-        else{
-          FireBaseCalls.fireBaseRegistration(editTextEmail, editTextPassword, age, Name, mobile, gender,country, " ", getApplicationContext(), true,Activity);
-
-        }
+        else Toast.makeText(this,"no internet connection",Toast.LENGTH_LONG).show();
     }
-
     // image upload
     private void showFileChooser() {
 
@@ -379,5 +382,12 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         country_EditText_from.setText(country.getName());
         return country.getName();
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

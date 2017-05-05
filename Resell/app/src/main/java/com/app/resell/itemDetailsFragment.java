@@ -1,6 +1,9 @@
 package com.app.resell;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,13 +67,14 @@ public class itemDetailsFragment extends Fragment {
 
             }
         });
+        if(isOnline()) {
+            if (clickedItem != null)
+                getUserInfo(clickedItem.getUserId());
+            else {
+                Log.v(TAG, "clicked item null");
 
-        if(clickedItem!=null)
-        getUserInfo(clickedItem.getUserId());
-        else{
-            Log.v(TAG,"clicked item null");
-
-        }
+            }
+        } else Toast.makeText(getContext(),"no internet connection",Toast.LENGTH_SHORT).show();
         return view;
     }
 
@@ -142,5 +147,12 @@ public class itemDetailsFragment extends Fragment {
 
         });
 
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
