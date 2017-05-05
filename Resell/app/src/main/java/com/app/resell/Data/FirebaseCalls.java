@@ -151,6 +151,7 @@ public  class  FireBaseCalls {
 
                     progressDialog.dismiss();
                     Toast.makeText(Activity, "Item saved", Toast.LENGTH_SHORT).show();
+                        Activity.finish();
                 }
 
                 @Override

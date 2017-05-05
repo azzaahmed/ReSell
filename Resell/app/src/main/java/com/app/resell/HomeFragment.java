@@ -30,6 +30,7 @@ public class HomeFragment extends Fragment {
     private ItemsAdapter imageAdapter;
     public static ProgressDialog progress;
     FirebaseUser user;
+
     public HomeFragment() {
     }
 
@@ -37,11 +38,13 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =inflater.inflate(R.layout.fragment_home, container, false);
-         progress = new ProgressDialog(getActivity());
-//        progress.setMessage("loading.....");
-//        progress.show();
-//        progress.setCancelable(false);
 
+         progress = new ProgressDialog(getActivity());
+        if(isOnline()) {
+        progress.setMessage("loading.....");
+        progress.show();
+        progress.setCancelable(false);
+        }
         Firebase.setAndroidContext(getActivity());
         gridview = (GridView) view.findViewById(R.id.gridview);
 

@@ -39,6 +39,8 @@ public class itemDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_item_details, container, false);
 
+
+
         databaseReference= FirebaseDatabase.getInstance().getReference();
 
 
