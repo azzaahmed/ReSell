@@ -178,6 +178,7 @@ public class Profile extends AppCompatActivity {
             fab.setLayoutParams(p);
             fab.setVisibility(View.GONE);
 
+            if(isOnline())
             getUserInfo(null, false, ProfileOwnerId);
             mobilelayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -194,7 +195,7 @@ public class Profile extends AppCompatActivity {
         else{
             if (user != null) {
                 Log.d("profile", "my profile");
-
+                if(isOnline())
                 getUserInfo(user,true,"");
                 //   getMyRequestedPosts();
                 fab.setOnClickListener(new View.OnClickListener() {
@@ -204,15 +205,16 @@ public class Profile extends AppCompatActivity {
 //                            Log.d("azzaaa", "maccount check is null");
 
                         if (pencil) {
-                            editClicked();
-                            fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
-                            pencil = false;
-                            profile_imageedit.setVisibility(View.VISIBLE);
+                            if (isOnline()) {
+                                editClicked();
+                                fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
+                                pencil = false;
+                                profile_imageedit.setVisibility(View.VISIBLE);
+                            }else Toast.makeText(getApplicationContext(),"no internet connection",Toast.LENGTH_SHORT).show();
+                        } else {
 
-                        }
-                        else {
-
-                            fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.pencil));
+                            if (isOnline()){
+                                fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.pencil));
                             try {
                                 saveEdit();
                             } catch (IOException e) {
@@ -221,7 +223,8 @@ public class Profile extends AppCompatActivity {
                             pencil = true;
                             profile_imageedit.setVisibility(View.GONE);
 
-                        }
+                        }else Toast.makeText(getApplicationContext(),"no internet connection",Toast.LENGTH_SHORT).show();
+                    }
                     }
                 });
 
