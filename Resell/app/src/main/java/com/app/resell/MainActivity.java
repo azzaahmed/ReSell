@@ -1,7 +1,13 @@
 package com.app.resell;
 
+import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.Loader;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,15 +44,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
 //sign in
 public class MainActivity extends AppCompatActivity  implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener {
+        View.OnClickListener, LoaderManager.LoaderCallbacks<Object> {
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
 
-    private  GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
     private Bundle extras;
 
@@ -67,25 +80,21 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
     GoogleSignInAccount accountt;
 
     boolean SignedInclick;
-    int counterin=0;
+    int counterin = 0;
+    SharedPreferences prefs = null;
+Bitmap mBitmap;
+    ImageView mWelcome;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+
+        //first run
+        prefs = getSharedPreferences("com.app.resell", MODE_PRIVATE);
+         mWelcome = (ImageView) findViewById(R.id.welcome);
 
         buttonSignIn = (Button) findViewById(R.id.buttonSignin);
-        textViewSignup  = (TextView) findViewById(R.id.textViewSignUp);
+        textViewSignup = (TextView) findViewById(R.id.textViewSignUp);
         //attaching click listener
         buttonSignIn.setOnClickListener(this);
         textViewSignup.setOnClickListener(this);
@@ -123,7 +132,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
         // options specified by gso.
 
 
-        mGoogleApiClient  = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .addConnectionCallbacks(this)
@@ -144,7 +153,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
         signInButton.setScopes(gso.getScopeArray());
         // [END customize_button]
 
-        SignedInclick=false;
+        SignedInclick = false;
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -158,14 +167,13 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
 
 //  counterin is needed as for some reason the listener is triggered two times (found out it is an issue with firebase listener itself)
                     if (!SignedInclick) {
-                        if(counterin!=1&&counterin!=2) {
+                        if (counterin != 1 && counterin != 2) {
                             Log.d(TAG, "sent to Find Ride from auth listener");
-                            Log.d(TAG, "counter"+counterin);
+                            Log.d(TAG, "counter" + counterin);
                             startActivity(new Intent(getApplicationContext(), Home.class));
                             finish();
                             counterin++;
-                        }
-                        else{
+                        } else {
                             counterin++;
                         }
                     }
@@ -211,13 +219,14 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
             Log.d(TAG, "in extra and " + mGoogleApiClient.isConnected());
 
             String SignOut_flag = extras.getString("SignOut_flag");
-            if(SignOut_flag.equals("true"))
+            if (SignOut_flag.equals("true"))
                 mGoogleApiClient.connect();
 
         }
         firebaseAuth.addAuthStateListener(mAuthListener);
 
     }
+
     // }
     @Override
     public void onStop() {
@@ -238,6 +247,18 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
+
+//        if (requestCode == FIRSTRUNREQUEST_CODE) {
+//            if (resultCode == Activity.RESULT_OK) {
+//                imageUri = data.getData();
+//                getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+//                });
+//            } else if (resultCode == Activity.RESULT_CANCELED) {
+//                Toast.makeText(this, "Action canceled.", Toast.LENGTH_LONG).show();
+//            } else {
+//                Toast.makeText(this, "Action failed!", Toast.LENGTH_LONG).show();
+//            }
+//        }
     }
     // [END onActivityResult]
 
@@ -252,7 +273,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
             // Signed in successfully, show authenticated UI.
 
             // Log.d(TAG, "sent to home");
-            GoogleSignInAccount  acct = result.getSignInAccount();
+            GoogleSignInAccount acct = result.getSignInAccount();
 
             firebaseAuthWithGoogle(acct);
 
@@ -274,7 +295,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
     // [END signIn]
 
     // [START signOut]
-    private  void signOut() {
+    private void signOut() {
 
         Log.d(TAG, "in sign out and" + mGoogleApiClient.isConnected());
         //  firebaseAuth.signOut();
@@ -343,7 +364,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                SignedInclick=true;
+                SignedInclick = true;
                 signIn();
                 break;
 
@@ -352,7 +373,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
                 break;
 
             case R.id.buttonSignin:
-                SignedInclick=true;
+                SignedInclick = true;
                 userLogin();
                 break;
 
@@ -363,9 +384,10 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnect ");
 
-        if (extras != null) {        String SignOut_flag = extras.getString("SignOut_flag");
-            if(SignOut_flag.equals("true")){
-                Log.d(TAG, "onConnect and if flag true  " );
+        if (extras != null) {
+            String SignOut_flag = extras.getString("SignOut_flag");
+            if (SignOut_flag.equals("true")) {
+                Log.d(TAG, "onConnect and if flag true  ");
                 signOut();
             }
         }
@@ -377,11 +399,10 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
     }
 
 
-
     // [START auth_with_google]
     // when sign button is clicked
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        accountt=acct;
+        accountt = acct;
         //  final FirebaseUser user = firebaseAuth.getCurrentUser();
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
         // [START_EXCLUDE silent]
@@ -406,8 +427,8 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
 
                         // in sign in succeed auth listener is fired automatically
                         //       else SignGoogleCredentialcompleted=true;
-                        if(firebaseAuth.getCurrentUser()!=null)
-                        checkAccountExists(firebaseAuth.getCurrentUser());
+                        if (firebaseAuth.getCurrentUser() != null)
+                            checkAccountExists(firebaseAuth.getCurrentUser());
 
 
                         // [START_EXCLUDE]
@@ -425,17 +446,17 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
 
 
     //method for user login
-    private void userLogin(){
+    private void userLogin() {
         String email = editTextEmail.getText().toString().trim();
-        String password  = editTextPassword.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
 
         //checking if email and passwords are empty
-        if(TextUtils.isEmpty(email)){
+        if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter your email", Toast.LENGTH_LONG).show();
             return;
         }
 
-        if(TextUtils.isEmpty(password)){
+        if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please enter your password", Toast.LENGTH_LONG).show();
             return;
         }
@@ -453,12 +474,11 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressDialog.dismiss();
                         //if the task is successful
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             startActivity(new Intent(getApplicationContext(), Home.class));
                             finish();
 
-                        }
-                        else {
+                        } else {
                             Toast.makeText(MainActivity.this, "wrong username or password", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -466,7 +486,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
 
     }
 
-    public void checkAccountExists (FirebaseUser user){
+    public void checkAccountExists(FirebaseUser user) {
 // checkAccountExists(firebaseAuth.getCurrentUser());
         final Account[] account = new Account[1];
 
@@ -489,6 +509,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
 
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -497,8 +518,113 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
         });
 
     }
+
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //first run
+        if (prefs.getBoolean("firstrun", true)) {
+            Log.v(TAG,"first run");
+            // Do first run stuff here then set 'firstrun' as false
+            // using the following line to edit/commit prefs
+            getLoaderManager().initLoader(0, null, this);
+            prefs.edit().putBoolean("firstrun", false).commit();
+        }else{
+            Log.v(TAG,"not first run");
+        }
+    }
+
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+//        if (data != null) {
+//            int columnIndex = data.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//
+//            data.moveToFirst();
+//            imagePath = data.getString(columnIndex);
+//        } else {
+//            imagePath = imageUri.getPath();
+//        }
+//
+//        setupImageView();
+//    }
+
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+////        String[] projection = {
+////                MediaStore.Images.Media.DATA
+////        };
+//      CursorLoader cursorLoader = new CursorLoader(getApplicationContext());
+//        cursorLoader.setUri();
+////
+//   return cursorLoader;
+//
+//
+//    }
+
+    @Override
+    public Loader<Object> onCreateLoader(int id, Bundle args) {
+        ImageView mChart = (ImageView) findViewById(R.id.welcome);
+        String URL = "https://drive.google.com/open?id=0Bx2A07u8aRxSbG1Dc1NJNmpTRzA";
+
+        mChart.setTag(URL);
+
+        new DownloadImagesTask().execute(URL);
+    return null;
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Object> loader, Object data) {
+        //imageView.setVisibility(Visible); for 10 sec
+        mWelcome.setImageBitmap(mBitmap);
+        mWelcome.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Object> loader) {
+
+    }
+
+
+    public class DownloadImagesTask extends AsyncTask<String, Void, Bitmap> {
+
+        String imageViewURL = null;
+
+
+        @Override
+        protected Bitmap doInBackground( String... imageViewURLs) {
+            this.imageViewURL = imageViewURLs[0];
+
+            return download_Image( imageViewURL);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            mBitmap=result;
+           // imageView.setImageBitmap(result);
+        }
+
+
+        private Bitmap download_Image(String url) {
+            Bitmap bm = null;
+            try {
+                URL aURL = new URL(url);
+                URLConnection conn = aURL.openConnection();
+                conn.connect();
+                InputStream is = conn.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is);
+                bm = BitmapFactory.decodeStream(bis);
+                bis.close();
+                is.close();
+            } catch (IOException e) {
+                Log.e("Hub", "Error getting the image from server : " + e.getMessage().toString());
+            }
+            return bm;
+        }
     }
 }
