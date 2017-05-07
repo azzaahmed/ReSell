@@ -2,13 +2,17 @@ package com.app.resell;
 
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
+import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -19,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +58,7 @@ import java.net.URLConnection;
 //sign in
 public class MainActivity extends AppCompatActivity  implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener, LoaderManager.LoaderCallbacks<Object> {
+        View.OnClickListener, LoaderManager.LoaderCallbacks {
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity  implements GoogleApiClient.
     SharedPreferences prefs = null;
 Bitmap mBitmap;
     ImageView mWelcome;
+     LinearLayout signInLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +98,7 @@ Bitmap mBitmap;
         //first run
         prefs = getSharedPreferences("com.app.resell", MODE_PRIVATE);
          mWelcome = (ImageView) findViewById(R.id.welcome);
+        signInLayout=(LinearLayout)findViewById(R.id.signinLayout);
 
         buttonSignIn = (Button) findViewById(R.id.buttonSignin);
         textViewSignup = (TextView) findViewById(R.id.textViewSignUp);
@@ -223,6 +230,20 @@ Bitmap mBitmap;
                 mGoogleApiClient.connect();
 
         }
+        Log.v(TAG, "pref " + prefs.getBoolean("firstrun", true));
+        if(isOnline()) {
+            if (prefs.getBoolean("firstrun", true)) {
+                Log.v(TAG, "first run");
+                // Do first run stuff here then set 'firstrun' as false
+                // using the following line to edit/commit prefs
+                signInLayout.setVisibility(View.GONE);
+                getLoaderManager().initLoader(0, null, this);
+                prefs.edit().putBoolean("firstrun", false).commit();
+            } else {
+                Log.v(TAG, "not first run");
+
+            }
+        }else Toast.makeText(this,"no internet connection",Toast.LENGTH_SHORT).show();
         firebaseAuth.addAuthStateListener(mAuthListener);
 
     }
@@ -527,89 +548,49 @@ Bitmap mBitmap;
     @Override
     protected void onResume() {
         super.onResume();
-        //first run
-        if (prefs.getBoolean("firstrun", true)) {
-            Log.v(TAG,"first run");
-            // Do first run stuff here then set 'firstrun' as false
-            // using the following line to edit/commit prefs
-            getLoaderManager().initLoader(0, null, this);
-            prefs.edit().putBoolean("firstrun", false).commit();
-        }else{
-            Log.v(TAG,"not first run");
-        }
-    }
-
-//    @Override
-//    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//        if (data != null) {
-//            int columnIndex = data.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-//
-//            data.moveToFirst();
-//            imagePath = data.getString(columnIndex);
-//        } else {
-//            imagePath = imageUri.getPath();
+//        //first run
+//        if (prefs.getBoolean("firstrun", true)) {
+//            Log.v(TAG,"first run");
+//            // Do first run stuff here then set 'firstrun' as false
+//            // using the following line to edit/commit prefs
+//            getLoaderManager().initLoader(0, null, this);
+//            prefs.edit().putBoolean("firstrun", false).commit();
+//        }else{
+//            Log.v(TAG,"not first run");
 //        }
-//
-//        setupImageView();
-//    }
+    }
 
-//    @Override
-//    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-////        String[] projection = {
-////                MediaStore.Images.Media.DATA
-////        };
-//      CursorLoader cursorLoader = new CursorLoader(getApplicationContext());
-//        cursorLoader.setUri();
-////
-//   return cursorLoader;
-//
-//
-//    }
 
     @Override
-    public Loader<Object> onCreateLoader(int id, Bundle args) {
+    public Loader onCreateLoader(int id, Bundle args) {
         ImageView mChart = (ImageView) findViewById(R.id.welcome);
-        String URL = "https://drive.google.com/open?id=0Bx2A07u8aRxSbG1Dc1NJNmpTRzA";
+       final String URL = "https://drive.google.com/uc?id=0Bx2A07u8aRxSbG1Dc1NJNmpTRzA";
 
+   //  final String URL =  "https://s-media-cache-ak0.pinimg.com/236x/e4/b2/86/e4b2864d7da3fa0327275b621ea7057e.jpg";
         mChart.setTag(URL);
+        Log.v(TAG,"create loader");
 
-        new DownloadImagesTask().execute(URL);
-    return null;
-
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-        //imageView.setVisibility(Visible); for 10 sec
-        mWelcome.setImageBitmap(mBitmap);
-        mWelcome.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Object> loader) {
-
-    }
-
-
-    public class DownloadImagesTask extends AsyncTask<String, Void, Bitmap> {
-
-        String imageViewURL = null;
-
-
+    return new AsyncTaskLoader<Bitmap>(this) {
+Bitmap mBitmap=null;
         @Override
-        protected Bitmap doInBackground( String... imageViewURLs) {
-            this.imageViewURL = imageViewURLs[0];
-
-            return download_Image( imageViewURL);
+        protected void onStartLoading() {
+            if (mBitmap != null) {
+                deliverResult(mBitmap);
+            } else {
+                showProgressDialog();
+                forceLoad();
+            }
+        }
+        @Override
+        public Bitmap loadInBackground() {
+            Log.v(TAG,"in background");
+            return download_Image(URL);
         }
 
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            mBitmap=result;
-           // imageView.setImageBitmap(result);
+        public void deliverResult(Bitmap data) {
+            mBitmap = data;
+            super.deliverResult(data);
         }
-
-
         private Bitmap download_Image(String url) {
             Bitmap bm = null;
             try {
@@ -624,7 +605,85 @@ Bitmap mBitmap;
             } catch (IOException e) {
                 Log.e("Hub", "Error getting the image from server : " + e.getMessage().toString());
             }
+            Log.v(TAG, "create bitmap " + bm);
+
             return bm;
         }
+    };
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Object data) {
+        //imageView.setVisibility(Visible); for 5 sec
+
+        Log.v(TAG, "load finished " + (Bitmap) data);
+        hideProgressDialog();
+        mWelcome.setImageBitmap((Bitmap) data);
+        mWelcome.setVisibility(View.VISIBLE);
+        Runnable mRunnable;
+        Handler mHandler=new Handler();
+
+        mRunnable=new Runnable() {
+
+            @Override
+            public void run() {
+                 mWelcome.setVisibility(View.GONE);
+                signInLayout.setVisibility(View.VISIBLE);
+            }
+        };
+        mHandler.postDelayed(mRunnable,5*1000);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
+
+
+//    public class DownloadImagesTask extends AsyncTask<String, Void, Bitmap> {
+//
+//        String imageViewURL = null;
+//
+//
+//        @Override
+//        protected Bitmap doInBackground( String... imageViewURLs) {
+//            this.imageViewURL = imageViewURLs[0];
+//
+//            return download_Image( imageViewURL);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap result) {
+//            mBitmap=result;
+//           // imageView.setImageBitmap(result);
+//        }
+//
+//
+//        private Bitmap download_Image(String url) {
+//            Bitmap bm = null;
+//            try {
+//                URL aURL = new URL(url);
+//                URLConnection conn = aURL.openConnection();
+//                conn.connect();
+//                InputStream is = conn.getInputStream();
+//                BufferedInputStream bis = new BufferedInputStream(is);
+//                bm = BitmapFactory.decodeStream(bis);
+//                bis.close();
+//                is.close();
+//            } catch (IOException e) {
+//                Log.e("Hub", "Error getting the image from server : " + e.getMessage().toString());
+//            }
+//            return bm;
+//        }
+//
+
+//    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
