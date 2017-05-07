@@ -24,6 +24,7 @@
     android:numColumns="auto_fit"
     android:stretchMode="columnWidth"
     android:gravity="center"
+        android:nestedScrollingEnabled="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
     </FrameLayout>
