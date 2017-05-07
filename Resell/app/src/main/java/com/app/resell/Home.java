@@ -59,6 +59,9 @@ public class Home extends AppCompatActivity {
         else if (id == R.id.action_profile) {
             startActivity(new Intent(getApplicationContext(), Profile.class));
         }
+        else if(id==R.id.action_myitems){
+            startActivity(new Intent(getApplicationContext(), myItems.class));
+        }
             return super.onOptionsItemSelected(item);
 
     }

@@ -60,7 +60,12 @@
         <activity
             android:name=".itemDetails"
             android:label="@string/title_activity_item_details"
-          />
+           >
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".Home" />
+          </activity>
+
         <activity
             android:name=".myItems"
             android:label="@string/title_activity_my_items"

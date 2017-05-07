@@ -6,10 +6,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +42,8 @@ public class itemDetailsFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_item_details, container, false);
 
 
+        getActivity().getWindow().setSharedElementEnterTransition(TransitionInflater.from(getActivity())
+                .inflateTransition(R.transition.move));
 
         databaseReference= FirebaseDatabase.getInstance().getReference();
 
@@ -55,6 +59,8 @@ public class itemDetailsFragment extends Fragment {
         itemImage=(ImageView) view.findViewById(R.id.header_cover_image);
         ownerName=(TextView) view.findViewById(R.id.user_profile_name);
         Log.d(TAG, "on create fragment details");
+
+
 
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,28 +95,17 @@ public class itemDetailsFragment extends Fragment {
         size.setText(clickedItem.getSize());
         Picasso.with(getActivity())
                 .load(clickedItem.getImageUrl()).fit().centerCrop()
-                .into(itemImage);
+                .into(itemImage, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        scheduleStartPostponedTransition(itemImage);
+                    }
 
-//        if(clickedOfferedPost.getPassengerState()!=null)
-//            if(clickedOfferedPost.getPassengerState().equals("Cancel")){
-//                RequestLayout1.setVisibility(View.GONE);
-//                RequestLayout2.setVisibility(View.GONE);
-//                requestOuterLayout.setVisibility(View.GONE);
-//            }
+                    @Override
+                    public void onError() {
 
-
-//        if(clickedOfferedPost.getRequestedByNo()>0) {
-//            Requestby.setVisibility(View.VISIBLE);
-//
-//            String mystring=Requestby.getText()+"";
-//            SpannableString content = new SpannableString(mystring);
-//            content.setSpan(new UnderlineSpan(), 0, mystring.length(), 0);
-//            Requestby.setText(content);
-//
-//        }else  Requestby.setVisibility(View.GONE);
-//
-//
-
+                    }
+                });
 
     }
 
@@ -139,6 +134,8 @@ public class itemDetailsFragment extends Fragment {
                     if (account[0].getName() != null) ownerName.setText(account[0].getName());
 
                     settingData();
+
+
                 }
             }
 
@@ -156,5 +153,18 @@ public class itemDetailsFragment extends Fragment {
                 (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    ///to make sure transition is postponed to the right time
+    private void scheduleStartPostponedTransition(final View sharedElement) {
+        sharedElement.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+                        getActivity().startPostponedEnterTransition();
+                        return true;
+                    }
+                });
     }
 }

@@ -32,5 +32,7 @@
     <string name="title_widget">Resell</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="myitems">My Items</string>
+    <string name="imageTransition">imageTransitionName</string>
 
 </resources>

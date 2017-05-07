@@ -1,5 +1,6 @@
 package com.app.resell;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -73,7 +74,10 @@ public class HomeFragment extends Fragment {
                     Item selectedItem = imageAdapter.getItem(position);
                     Log.v(TAG, "item clicked");
                     Intent intent = new Intent(getActivity(), itemDetails.class).putExtra("selectedItem", selectedItem);
-                    startActivity(intent);
+                    //startActivity(intent);
+                    Bundle bundle= ActivityOptions.makeSceneTransitionAnimation(getActivity()
+                            , view.findViewById(R.id.grid_item_imageview), view.findViewById(R.id.grid_item_imageview).getTransitionName()).toBundle();
+                    startActivity(intent, bundle);
                 }
             });
         }

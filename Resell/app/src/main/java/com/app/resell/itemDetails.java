@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -28,7 +27,7 @@ public class itemDetails extends AppCompatActivity {
         final Activity activity=this;
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-
+        postponeEnterTransition();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
