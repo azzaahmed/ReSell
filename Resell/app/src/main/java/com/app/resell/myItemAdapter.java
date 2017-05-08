@@ -26,6 +26,7 @@ public class myItemAdapter extends RecyclerView.Adapter<myItemAdapter.MyViewHold
 
     private List<Item> itemsList;
     private Activity activity;
+    public int lastPosition = -1;
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView price, description ,size;
         private ImageView image,deleteButton;
@@ -40,7 +41,6 @@ public class myItemAdapter extends RecyclerView.Adapter<myItemAdapter.MyViewHold
             deleteButton=(ImageView)view.findViewById(R.id.delete);
         }
     }
-l
 
     public myItemAdapter(List<Item> itemsList,Activity activity) {
         this.itemsList = itemsList;
@@ -68,7 +68,7 @@ l
         delete(holder,position);
 else Toast.makeText(activity,"no internet connection",Toast.LENGTH_LONG).show();
 
-        // Here you apply the animation when the view is bound
+        // Here you apply the animation of item when the view is bound
         setAnimation(holder.itemView, position);
     }
 
@@ -123,10 +123,10 @@ else Toast.makeText(activity,"no internet connection",Toast.LENGTH_LONG).show();
 
     }
 
-
+//for animation of the list
     private void setAnimation(View viewToAnimate, int position)
     {
-         int lastPosition = -1;
+
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > lastPosition)
         {
