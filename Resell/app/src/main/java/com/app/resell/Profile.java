@@ -1,12 +1,10 @@
 package com.app.resell;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -121,7 +119,7 @@ public class Profile extends AppCompatActivity {
     private EditText country_EditText_from;
     private CountryPicker mCountryPicker;
 
-
+    Activity Activity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,14 +127,14 @@ public class Profile extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        Activity=this;
         mStorage = FirebaseStorage.getInstance().getReference();
 
         // ************************************************************************//
         collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.toolbar_layout);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         progress = new ProgressDialog(this);
-        if(isOnline()) {
+        if(Utility.isOnline(this)) {
             progress.setMessage("Loading.....");
             progress.show();
             progress.setCancelable(false);
@@ -180,7 +178,7 @@ public class Profile extends AppCompatActivity {
             fab.setLayoutParams(p);
             fab.setVisibility(View.GONE);
 
-            if(isOnline())
+            if(Utility.isOnline(this))
             getUserInfo(null, false, ProfileOwnerId);
             mobilelayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -197,7 +195,7 @@ public class Profile extends AppCompatActivity {
         else{
             if (user != null) {
                 Log.d("profile", "my profile");
-                if(isOnline())
+                if(Utility.isOnline(this))
                 getUserInfo(user,true,"");
                 //   getMyRequestedPosts();
                 fab.setOnClickListener(new View.OnClickListener() {
@@ -207,7 +205,7 @@ public class Profile extends AppCompatActivity {
 //                            Log.d("azzaaa", "maccount check is null");
 
                         if (pencil) {
-                            if (isOnline()) {
+                            if (Utility.isOnline(Activity)) {
                                 editClicked();
                                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
                                 pencil = false;
@@ -215,7 +213,7 @@ public class Profile extends AppCompatActivity {
                             }else Toast.makeText(getApplicationContext(),"no internet connection",Toast.LENGTH_SHORT).show();
                         } else {
 
-                            if (isOnline()){
+                            if (Utility.isOnline(Activity)){
                                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.pencil));
                             try {
                                 saveEdit();
@@ -639,14 +637,6 @@ public class Profile extends AppCompatActivity {
 
     }
 
-
-
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
 
 
     //validations when edit

@@ -1,12 +1,10 @@
 package com.app.resell;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -57,7 +55,7 @@ public class AddItem extends AppCompatActivity  implements View.OnClickListener 
 
     private ProgressDialog progressDialog;
     private  FireBaseCalls FireBaseCalls;
-
+    Activity activity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +64,7 @@ public class AddItem extends AppCompatActivity  implements View.OnClickListener 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        activity=this;
         description=(EditText)findViewById(R.id.description);
         price=(EditText)findViewById(R.id.price);
         size=(EditText)findViewById(R.id.size);
@@ -81,7 +80,7 @@ public class AddItem extends AppCompatActivity  implements View.OnClickListener 
             public void onClick(View v) {
 //                Intent myIntent = new Intent(getContext(), offerRide.class);
 //                startActivity(myIntent);
-                if(isOnline()) {
+                if(Utility.isOnline(activity)) {
                     if(validForm()) {
                         UploadImage();
                     }
@@ -183,12 +182,6 @@ public class AddItem extends AppCompatActivity  implements View.OnClickListener 
     }
 
 
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
 
     private boolean validForm(){
 

@@ -1,9 +1,6 @@
 package com.app.resell;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -133,7 +130,7 @@ public class editProfile extends AppCompatActivity{
 //    }
         }
 
-        if(isOnline())
+        if(Utility.isOnline(this))
         FireBaseCalls.AddFireBaseExtraInfo(user.getDisplayName(), mage, mmobile, mgender, user.getEmail(), user.getPhotoUrl() + "", this,country);
         else  Toast.makeText(this, "no internet connection", Toast.LENGTH_LONG).show();
 
@@ -195,10 +192,5 @@ public class editProfile extends AppCompatActivity{
         return country.getName();
     }
 
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
+
 }

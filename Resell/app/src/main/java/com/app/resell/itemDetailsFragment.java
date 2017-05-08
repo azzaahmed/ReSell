@@ -1,9 +1,6 @@
 package com.app.resell;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.transition.TransitionInflater;
@@ -75,7 +72,7 @@ public class itemDetailsFragment extends Fragment {
 
             }
         });
-        if(isOnline()) {
+        if(Utility.isOnline(getActivity())) {
             if (clickedItem != null)
                 getUserInfo(clickedItem.getUserId());
             else {
@@ -148,12 +145,6 @@ public class itemDetailsFragment extends Fragment {
 
     }
 
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
 
     ///to make sure transition is postponed to the right time
     private void scheduleStartPostponedTransition(final View sharedElement) {

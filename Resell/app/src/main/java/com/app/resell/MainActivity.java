@@ -3,14 +3,11 @@ package com.app.resell;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.AsyncTaskLoader;
-import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -231,7 +228,7 @@ Bitmap mBitmap;
 
         }
         Log.v(TAG, "pref " + prefs.getBoolean("firstrun", true));
-        if(isOnline()) {
+        if(Utility.isOnline(this)) {
             if (prefs.getBoolean("firstrun", true)) {
                 Log.v(TAG, "first run");
                 // Do first run stuff here then set 'firstrun' as false
@@ -679,10 +676,5 @@ Bitmap mBitmap=null;
 
 //    }
 
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
+
 }

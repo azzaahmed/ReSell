@@ -1,10 +1,7 @@
 package com.app.resell;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -64,7 +61,7 @@ public class myItemAdapter extends RecyclerView.Adapter<myItemAdapter.MyViewHold
         Picasso.with(activity).load(item.getImageUrl()).fit().centerCrop()
                 .into(holder.image);
 
-        if(isOnline())
+        if(Utility.isOnline(activity))
         delete(holder,position);
 else Toast.makeText(activity,"no internet connection",Toast.LENGTH_LONG).show();
     }
@@ -119,11 +116,6 @@ else Toast.makeText(activity,"no internet connection",Toast.LENGTH_LONG).show();
 
 
     }
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
+
 }
 

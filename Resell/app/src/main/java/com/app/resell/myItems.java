@@ -1,9 +1,6 @@
 package com.app.resell;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -43,7 +40,7 @@ public class myItems extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         progress = new ProgressDialog(this);
-        if(isOnline()) {
+        if(Utility.isOnline(this)) {
             progress.setMessage("loading.....");
             progress.show();
             progress.setCancelable(false);
@@ -73,7 +70,7 @@ public class myItems extends AppCompatActivity {
                })
        );
 
-if(isOnline())
+if(Utility.isOnline(this))
           getMyItems();
         else Toast.makeText(this, "no internet connection", Toast.LENGTH_SHORT).show();
     }
@@ -120,10 +117,5 @@ public void getMyItems(){
     });
 
 }
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
+
 }

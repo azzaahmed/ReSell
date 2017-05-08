@@ -2,10 +2,7 @@ package com.app.resell;
 
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -41,7 +38,7 @@ public class HomeFragment extends Fragment {
         View view =inflater.inflate(R.layout.fragment_home, container, false);
 
          progress = new ProgressDialog(getActivity());
-        if(isOnline()) {
+        if(Utility.isOnline(getActivity())) {
         progress.setMessage("loading.....");
         progress.show();
         progress.setCancelable(false);
@@ -53,7 +50,7 @@ public class HomeFragment extends Fragment {
         user = firebaseAuth.getCurrentUser();
         //Firebase itemListsRef = new Firebase("https://resell-8d488.firebaseio.com/").child("items").child(user.getUid());
         Firebase itemListsRef=null;
-        if(isOnline()) {
+        if(Utility.isOnline(getActivity())) {
             itemListsRef = new Firebase("https://resell-8d488.firebaseio.com/").child("items");
 
             //  if(itemListsRef.push()==null){
@@ -88,12 +85,7 @@ public class HomeFragment extends Fragment {
         return view;
 
     }
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
+
 
 
     @Override
