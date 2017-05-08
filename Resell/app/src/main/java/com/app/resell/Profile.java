@@ -20,9 +20,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -407,7 +409,7 @@ public class Profile extends AppCompatActivity {
         dividerAfterName.setVisibility(View.VISIBLE);
 
         ageLayout.setVisibility(View.GONE);
-        emailLayout.setVisibility(View.GONE);
+        emailLayout.setVisibility(View.VISIBLE);
         genderLayout.setVisibility(View.GONE);
         mobileLayout.setVisibility(View.GONE);
         countryLayout.setVisibility(View.GONE);
@@ -417,7 +419,7 @@ public class Profile extends AppCompatActivity {
 
 
         editageLayout.setVisibility(View.VISIBLE);
-        editemailLayout.setVisibility(View.VISIBLE);
+        editemailLayout.setVisibility(View.GONE);
         editmobileLayout.setVisibility(View.VISIBLE);
         editgenderLayout.setVisibility(View.VISIBLE);
         editCountryLayout.setVisibility(View.VISIBLE);
@@ -485,13 +487,13 @@ public class Profile extends AppCompatActivity {
 
         }
 
-
-        if(profilepic_attached) {
-            UploadImage();
-        }else {
-            firebasedit(false);
+        if(validForm()){
+            if (profilepic_attached) {
+                UploadImage();
+            } else {
+                firebasedit(false);
+            }
         }
-
     }
     public void returnprofileView(){
         RelativeLayout ageLayout=(RelativeLayout)findViewById(R.id.agelayout);
@@ -531,7 +533,7 @@ public class Profile extends AppCompatActivity {
 //        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        startActivityForResult(intent,GALLERY_REQUEST);
+        startActivityForResult(intent, GALLERY_REQUEST);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -645,4 +647,48 @@ public class Profile extends AppCompatActivity {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
+
+
+    //validations when edit
+    private boolean validForm(){
+        TextInputLayout InputLayoutAgeEdit=(TextInputLayout)findViewById(R.id.InputLayoutAgeEdit);
+        TextInputLayout InputLayoutMobileEdit=(TextInputLayout)findViewById(R.id.InputLayoutMobileEdit);
+
+        int counter = 0;
+
+
+            if(Integer.parseInt(mage)<12 || Integer.parseInt(mage)> 90) {
+                InputLayoutAgeEdit.setError("please enter reasonable age");
+                requestFocus(ageedit);
+                counter++;
+            }
+            else InputLayoutAgeEdit.setErrorEnabled(false);
+
+
+
+            if (!isValidPhone(mmobile)) {
+                InputLayoutMobileEdit.setError("Invalid mobile number");
+                requestFocus(mobileedit);
+                counter++;
+            } else {
+                InputLayoutMobileEdit.setErrorEnabled(false);
+        }
+
+        return counter == 0;
+    }
+
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+    }
+
+    public static boolean isValidPhone(CharSequence target) {
+        int x = target.length();
+        if(x!=11){
+            return false;
+        }
+        return !TextUtils.isEmpty(target) && Patterns.PHONE.matcher(target).matches();
+    }
+
 }
