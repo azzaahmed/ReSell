@@ -205,12 +205,13 @@ public class Profile extends AppCompatActivity {
 //                            Log.d("azzaaa", "maccount check is null");
 
                         if (pencil) {
-                            if (Utility.isOnline(Activity)) {
+                            if (Utility.isOnline(Activity)&&myAccount!=null) {
                                 editClicked();
                                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
                                 pencil = false;
                                 profile_imageedit.setVisibility(View.VISIBLE);
-                            }else Toast.makeText(getApplicationContext(),"no internet connection",Toast.LENGTH_SHORT).show();
+                            }else if(!
+                                    Utility.isOnline(Activity)) Toast.makeText(getApplicationContext(),"no internet connection",Toast.LENGTH_SHORT).show();
                         } else {
 
                             if (Utility.isOnline(Activity)){
