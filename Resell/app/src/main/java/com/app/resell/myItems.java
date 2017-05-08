@@ -73,12 +73,12 @@ public class myItems extends AppCompatActivity {
 if(Utility.isOnline(this))
           getMyItems();
         else Toast.makeText(this, "no internet connection", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
 
     }
 

@@ -14,8 +14,6 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -27,7 +25,7 @@ public class HomeFragment extends Fragment {
     private GridView gridview;
     private ItemsAdapter imageAdapter;
     public static ProgressDialog progress;
-    FirebaseUser user;
+    Firebase itemListsRef=null;
 
     public HomeFragment() {
     }
@@ -46,10 +44,7 @@ public class HomeFragment extends Fragment {
         Firebase.setAndroidContext(getActivity());
         gridview = (GridView) view.findViewById(R.id.gridview);
 
-        FirebaseAuth firebaseAuth= FirebaseAuth.getInstance();
-        user = firebaseAuth.getCurrentUser();
-        //Firebase itemListsRef = new Firebase("https://resell-8d488.firebaseio.com/").child("items").child(user.getUid());
-        Firebase itemListsRef=null;
+
         if(Utility.isOnline(getActivity())) {
             itemListsRef = new Firebase("https://resell-8d488.firebaseio.com/").child("items");
 
@@ -92,4 +87,14 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+//        if(Utility.isOnline(getActivity())) {
+//            itemListsRef = new Firebase("https://resell-8d488.firebaseio.com/").child("items");
+//            imageAdapter = new ItemsAdapter(getActivity(), Item.class, R.layout.image_item, itemListsRef);
+//            gridview.setAdapter(imageAdapter);
+//        }
+    }
 }
+

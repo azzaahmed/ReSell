@@ -225,7 +225,6 @@ Bitmap mBitmap;
             String SignOut_flag = extras.getString("SignOut_flag");
             if (SignOut_flag.equals("true"))
                 mGoogleApiClient.connect();
-
         }
         Log.v(TAG, "pref " + prefs.getBoolean("firstrun", true));
         if(Utility.isOnline(this)) {

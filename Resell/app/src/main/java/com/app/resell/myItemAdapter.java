@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +30,7 @@ public class myItemAdapter extends RecyclerView.Adapter<myItemAdapter.MyViewHold
         private TextView price, description ,size;
         private ImageView image,deleteButton;
 
+
         public MyViewHolder(View view) {
             super(view);
             price = (TextView) view.findViewById(R.id.price);
@@ -37,7 +40,7 @@ public class myItemAdapter extends RecyclerView.Adapter<myItemAdapter.MyViewHold
             deleteButton=(ImageView)view.findViewById(R.id.delete);
         }
     }
-
+l
 
     public myItemAdapter(List<Item> itemsList,Activity activity) {
         this.itemsList = itemsList;
@@ -64,6 +67,9 @@ public class myItemAdapter extends RecyclerView.Adapter<myItemAdapter.MyViewHold
         if(Utility.isOnline(activity))
         delete(holder,position);
 else Toast.makeText(activity,"no internet connection",Toast.LENGTH_LONG).show();
+
+        // Here you apply the animation when the view is bound
+        setAnimation(holder.itemView, position);
     }
 
     @Override
@@ -117,5 +123,17 @@ else Toast.makeText(activity,"no internet connection",Toast.LENGTH_LONG).show();
 
     }
 
+
+    private void setAnimation(View viewToAnimate, int position)
+    {
+         int lastPosition = -1;
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition)
+        {
+            Animation animation = AnimationUtils.loadAnimation(activity.getApplicationContext(), android.R.anim.slide_in_left);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
+        }
+    }
 }
 
