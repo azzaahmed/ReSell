@@ -61,11 +61,7 @@ public class myItems extends AppCompatActivity {
                new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
                    @Override
                    public void onItemClick(View view, int position) {
-                       //     clickedItem =itemsList.get(position);
-//                Account account = AccountsList.get(position);
-//                Intent intent = new Intent(getActivity(), RequestDetails.class).putExtra("selectedPost", post);
-//                intent.putExtra("from_requested", true);
-//                startActivity(intent);
+
                    }
                })
        );

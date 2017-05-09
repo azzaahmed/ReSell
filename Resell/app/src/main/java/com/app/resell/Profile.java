@@ -84,7 +84,6 @@ public class Profile extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private Button edit_profile;
     private DatabaseReference databaseReference;
-   // private Account mmAccount;
 
     private Account mAccount;
     private  boolean check_before_returnView=false;
@@ -93,10 +92,9 @@ public class Profile extends AppCompatActivity {
     private Button requestedRidesButton;
     private boolean displayOwner=false;
     private String ProfileOwnerId;
-   // private ArrayList<offeredPost> RequestedPostsList = new ArrayList<>();
     private CollapsingToolbarLayout collapsingToolbarLayout;
    Account myAccount;
-    //  FloatingActionButton fabimage;
+
     FloatingActionButton fab;
 
 
@@ -130,7 +128,7 @@ public class Profile extends AppCompatActivity {
         Activity=this;
         mStorage = FirebaseStorage.getInstance().getReference();
 
-        // ************************************************************************//
+
         collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.toolbar_layout);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         progress = new ProgressDialog(this);
@@ -141,7 +139,7 @@ public class Profile extends AppCompatActivity {
         }else Toast.makeText(this,"no internet connection",Toast.LENGTH_LONG).show();
 
         mobilelayout = (RelativeLayout) findViewById(R.id.mobilelayout);
-      //  Name = (TextView) findViewById(R.id.Name);
+
         age = (TextView) findViewById(R.id.age);
         email = (TextView) findViewById(R.id.Email);
         gender = (TextView)findViewById(R.id.Gender);
@@ -197,12 +195,11 @@ public class Profile extends AppCompatActivity {
                 Log.d("profile", "my profile");
                 if(Utility.isOnline(this))
                 getUserInfo(user,true,"");
-                //   getMyRequestedPosts();
+
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        if (mmAccount == null)
-//                            Log.d("azzaaa", "maccount check is null");
+
 
                         if (pencil) {
                             if (Utility.isOnline(Activity)&&myAccount!=null) {
@@ -237,47 +234,7 @@ public class Profile extends AppCompatActivity {
                     }
                 });
 
-                /*
-                offeredRidesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-                        Log.d("My profile", "offeredposts clicked");
-                        final FirebaseUser User = FirebaseAuth.getInstance().getCurrentUser();
-                        DatabaseReference Ref = databaseReference.child("posts");
-                        Ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) {
-                                if (snapshot.hasChild(User.getUid())) {
-                                    // run some code
-                                    startActivity(new Intent(com.app.skety.NewProfile.this, myOfferedPosts.class));
-                                } else {
-                                    Toast toast = Toast.makeText(com.app.skety.NewProfile.this, "No offered posts yet !", Toast.LENGTH_SHORT);
-                                    toast.show();
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-
-                    }
-                });
-                requestedRidesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(RequestedPostsList.size()!=0)
-                            startActivity(new Intent(cProfile.this, MyRequestedRides.class));
-                        else {
-                            Toast toast = Toast.makeText(Profile.this, "No requested posts yet !", Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    }
-                });
-                //   }
-                */
             }
 
 
@@ -313,11 +270,9 @@ public class Profile extends AppCompatActivity {
         databaseReference.child("users").child(user_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // You can get the text using getValue. Since the DataSnapshot is of the exact
-                // data you asked for (the node listName), when you use getValue you know it
-                // will return a String.
+
                 account[0] = dataSnapshot.getValue(Account.class);
-//*
+
                 if(ViewMyProfile)
            myAccount=dataSnapshot.getValue(Account.class);
 
@@ -326,10 +281,9 @@ public class Profile extends AppCompatActivity {
                     Log.d("My profile", "account from get user info method");
                     if (account[0].getName() != null)
                         collapsingToolbarLayout.setTitle(account[0].getName());
-                    //  Name.setText(account[0].getName());
-                    Log.d("My profile", "name not null");
+                   Log.d("My profile", "name not null");
                     email.setText(account[0].getEmail());
-                    //  gender.setText(mAccount.getGender());
+
                     if(ViewMyProfile) {
                         if (account[0].getImage_url() != null)
                             Picasso.with(Profile.this)
@@ -349,7 +303,7 @@ public class Profile extends AppCompatActivity {
                     if (account[0].getMobile() != null) mobile.setText(account[0].getMobile());
                     if (account[0].getGender() != null) gender.setText(account[0].getGender());
                     if (account[0].getCountry() != null) Country.setText(account[0].getCountry());
-                    //mmAccount=account[0];
+
 
                     progress.dismiss();
                 }

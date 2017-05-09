@@ -87,13 +87,11 @@ public class editProfile extends AppCompatActivity{
             if (mage.isEmpty()) mage = account.getAge();
 
             if (mmobile.isEmpty()) mmobile = account.getMobile();
-            // msmoker = smoker.getSelectedItem().toString();////////////////////////////////
-            // get selected radio button from radioGroup
+
             oldurl=account.getImage_url();
 
             mgender=gender.getSelectedItem().toString();
-//    if (mgender.isEmpty()) mgender = account.getGender();
-//    if (msmoker.isEmpty()) msmoker = account.getSmoker();
+
         }
 
         else{
@@ -123,11 +121,7 @@ public class editProfile extends AppCompatActivity{
                 return;
 
             }
-//    if(TextUtils.isEmpty(msmoker)){
-//        Toast.makeText(this,"smoker or non-smoker",Toast.LENGTH_LONG).show();
-//        return;
-//
-//    }
+
         }
 
         if(Utility.isOnline(this))
@@ -142,7 +136,7 @@ public class editProfile extends AppCompatActivity{
         if(account!=null) {
             finish();
         }
-        // your code.
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

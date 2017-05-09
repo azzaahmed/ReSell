@@ -78,8 +78,7 @@ public class AddItem extends AppCompatActivity  implements View.OnClickListener 
         post_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent myIntent = new Intent(getContext(), offerRide.class);
-//                startActivity(myIntent);
+
                 if(Utility.isOnline(activity)) {
                     if(validForm()) {
                         UploadImage();

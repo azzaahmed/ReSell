@@ -48,7 +48,6 @@ public class HomeFragment extends Fragment {
         if(Utility.isOnline(getActivity())) {
             itemListsRef = new Firebase("https://resell-8d488.firebaseio.com/").child("items");
 
-            //  if(itemListsRef.push()==null){
             if (itemListsRef == null) {
                 Log.d(TAG, "check reference is null empty items");
                 progress.dismiss();
@@ -92,11 +91,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-//        if(Utility.isOnline(getActivity())) {
-//            itemListsRef = new Firebase("https://resell-8d488.firebaseio.com/").child("items");
-//            imageAdapter = new ItemsAdapter(getActivity(), Item.class, R.layout.image_item, itemListsRef);
-//            gridview.setAdapter(imageAdapter);
-//        }
+
     }
 
 }

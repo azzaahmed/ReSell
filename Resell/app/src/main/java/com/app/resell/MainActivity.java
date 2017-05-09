@@ -266,17 +266,7 @@ Bitmap mBitmap;
             handleSignInResult(result);
         }
 
-//        if (requestCode == FIRSTRUNREQUEST_CODE) {
-//            if (resultCode == Activity.RESULT_OK) {
-//                imageUri = data.getData();
-//                getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
-//                });
-//            } else if (resultCode == Activity.RESULT_CANCELED) {
-//                Toast.makeText(this, "Action canceled.", Toast.LENGTH_LONG).show();
-//            } else {
-//                Toast.makeText(this, "Action failed!", Toast.LENGTH_LONG).show();
-//            }
-//        }
+
     }
     // [END onActivityResult]
 
@@ -284,13 +274,10 @@ Bitmap mBitmap;
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
 
-        //   user = firebaseAuth.getCurrentUser();
 
         if (result.isSuccess()) {
 
             // Signed in successfully, show authenticated UI.
-
-            // Log.d(TAG, "sent to home");
             GoogleSignInAccount acct = result.getSignInAccount();
 
             firebaseAuthWithGoogle(acct);
@@ -331,20 +318,6 @@ Bitmap mBitmap;
     }
     // [END signOut]
 
-    // [START revokeAccess]
-    private void revokeAccess() {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // [START_EXCLUDE]
-                        updateUI(false);
-                        // [END_EXCLUDE]
-                    }
-                });
-
-    }
-    // [END revokeAccess]
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -426,9 +399,8 @@ Bitmap mBitmap;
         // [START_EXCLUDE silent]
         showProgressDialog();
         // [END_EXCLUDE]
-//        final boolean[] flag = {false};
+
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        // final Account myAccount=  new Account(acct.getDisplayName(), "" + acct.getPhotoUrl(), acct.getEmail());
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -444,7 +416,6 @@ Bitmap mBitmap;
                         }
 
                         // in sign in succeed auth listener is fired automatically
-                        //       else SignGoogleCredentialcompleted=true;
                         if (firebaseAuth.getCurrentUser() != null)
                             checkAccountExists(firebaseAuth.getCurrentUser());
 
@@ -505,15 +476,13 @@ Bitmap mBitmap;
     }
 
     public void checkAccountExists(FirebaseUser user) {
-// checkAccountExists(firebaseAuth.getCurrentUser());
+
         final Account[] account = new Account[1];
 
         databaseReference.child("users").child(user.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // You can get the text using getValue. Since the DataSnapshot is of the exact
-                // data you asked for (the node listName), when you use getValue you know it
-                // will return a String.
+
                 account[0] = dataSnapshot.getValue(Account.class);
 
                 if (account[0] != null) {
@@ -545,27 +514,13 @@ Bitmap mBitmap;
     @Override
     protected void onResume() {
         super.onResume();
-//        //first run
-//        if (prefs.getBoolean("firstrun", true)) {
-//            Log.v(TAG,"first run");
-//            // Do first run stuff here then set 'firstrun' as false
-//            // using the following line to edit/commit prefs
-//            getLoaderManager().initLoader(0, null, this);
-//            prefs.edit().putBoolean("firstrun", false).commit();
-//        }else{
-//            Log.v(TAG,"not first run");
-//        }
+
     }
 
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        ImageView mChart = (ImageView) findViewById(R.id.welcome);
-       final String URL = "https://drive.google.com/uc?id=0Bx2A07u8aRxSbG1Dc1NJNmpTRzA";
-
-   //  final String URL =  "https://s-media-cache-ak0.pinimg.com/236x/e4/b2/86/e4b2864d7da3fa0327275b621ea7057e.jpg";
-        mChart.setTag(URL);
-        Log.v(TAG,"create loader");
+      final String URL = "https://drive.google.com/uc?id=0Bx2A07u8aRxSbG1Dc1NJNmpTRzA";
 
     return new AsyncTaskLoader<Bitmap>(this) {
 Bitmap mBitmap=null;
@@ -612,8 +567,6 @@ Bitmap mBitmap=null;
 
     @Override
     public void onLoadFinished(Loader loader, Object data) {
-        //imageView.setVisibility(Visible); for 5 sec
-
         Log.v(TAG, "load finished " + (Bitmap) data);
         hideProgressDialog();
         mWelcome.setImageBitmap((Bitmap) data);
@@ -636,48 +589,5 @@ Bitmap mBitmap=null;
     public void onLoaderReset(Loader loader) {
 
     }
-
-
-//    public class DownloadImagesTask extends AsyncTask<String, Void, Bitmap> {
-//
-//        String imageViewURL = null;
-//
-//
-//        @Override
-//        protected Bitmap doInBackground( String... imageViewURLs) {
-//            this.imageViewURL = imageViewURLs[0];
-//
-//            return download_Image( imageViewURL);
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Bitmap result) {
-//            mBitmap=result;
-//           // imageView.setImageBitmap(result);
-//        }
-//
-//
-//        private Bitmap download_Image(String url) {
-//            Bitmap bm = null;
-//            try {
-//                URL aURL = new URL(url);
-//                URLConnection conn = aURL.openConnection();
-//                conn.connect();
-//                InputStream is = conn.getInputStream();
-//                BufferedInputStream bis = new BufferedInputStream(is);
-//                bm = BitmapFactory.decodeStream(bis);
-//                bis.close();
-//                is.close();
-//            } catch (IOException e) {
-//                Log.e("Hub", "Error getting the image from server : " + e.getMessage().toString());
-//            }
-//            return bm;
-//        }
-//
-
-//    }
-
-
-
 
 }

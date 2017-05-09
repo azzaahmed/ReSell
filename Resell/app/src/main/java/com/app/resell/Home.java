@@ -9,14 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.app.resell.Data.FetchItems;
-import java.util.ArrayList;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class Home extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
-    public static ArrayList<Item> itemsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

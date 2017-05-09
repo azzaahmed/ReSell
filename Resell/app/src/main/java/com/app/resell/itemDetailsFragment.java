@@ -30,7 +30,7 @@ public class itemDetailsFragment extends Fragment {
     ImageView profileImage;
     private DatabaseReference databaseReference;
     String TAG="itemDetailsFragment";
-  //  public static final String ACTION_DATA_UPDATED = "com.app.resell.ACTION_DATA_UPDATED";
+
     public itemDetailsFragment() {
     }
 
@@ -105,9 +105,6 @@ public class itemDetailsFragment extends Fragment {
                     }
                 });
 
-//        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
-//        getContext().sendBroadcast(dataUpdatedIntent);
-//        updateWidgets(getContext());
 
     }
 
@@ -120,9 +117,7 @@ public class itemDetailsFragment extends Fragment {
         databaseReference.child("users").child(user_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // You can get the text using getValue. Since the DataSnapshot is of the exact
-                // data you asked for (the node listName), when you use getValue you know it
-                // will return a String.
+
                 account[0] = dataSnapshot.getValue(Account.class);
 
                 if (account[0] != null) {
@@ -165,10 +160,4 @@ public class itemDetailsFragment extends Fragment {
     }
 
 
-//    private static void updateWidgets(Context context) {
-//        // Setting the package ensures that only components in our app will receive the broadcast
-//        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
-//                .setPackage(context.getPackageName());
-//        context.sendBroadcast(dataUpdatedIntent);
-//    }
 }

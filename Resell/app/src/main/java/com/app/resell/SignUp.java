@@ -166,18 +166,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     private void registerUser() {
 
-//            final String mgender=gender.getText().toString().trim();
-//            final String msmoker=smoker.getText().toString().trim();
-        // final String msmoker = smoker.getSelectedItem().toString();
 
-//            if(TextUtils.isEmpty(msmoker)){
-//                Toast.makeText(this,"you are smoker or not",Toast.LENGTH_LONG).show();
-//                return;
-//            }
         if (Utility.isOnline(this)) {
             if (profilePic_attached) {
-                //UploadImage call fireBaseRegistration inside it but passes the image_path and boolean of false as there is an image
-                UploadImage();
+              UploadImage();
             } else {
                 FireBaseCalls.fireBaseRegistration(editTextEmail, editTextPassword, age, Name, mobile, gender, country, " ", getApplicationContext(), true, Activity);
 
@@ -209,7 +201,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 e.printStackTrace();
             }
 
-           // imageView_circle.setImageURI(imageUri);
+
             Picasso.with(SignUp.this)
                     .load(imageUri).fit().centerCrop()
                     .into(imageView_circle);
@@ -312,8 +304,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             inputLayoutMobile.setErrorEnabled(false);
         }
         if(gender.getSelectedItem().toString().equals("Gender")){
-            //Toast.makeText(this,"Please enter your gender",Toast.LENGTH_LONG).show();
-            inputLayoutGender.setError("Enter your gender");
+             inputLayoutGender.setError("Enter your gender");
             requestFocus(gender);
             counter ++;
         }else{

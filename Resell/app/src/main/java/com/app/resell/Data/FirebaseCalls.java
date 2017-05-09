@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -160,44 +159,11 @@ public  class  FireBaseCalls {
                 }
 
             });
-
-            //   startActivity(new Intent(this, Home.class).putExtra("mAccount",myaccount));
-     //       Activity.startActivity(new Intent(Activity, myOfferedPosts.class));
         }
 
 
     }
 
-    public Account RetrieveUser(String user_id){
 
-
-
-            final Account[] account = new Account[1];
-
-
-
-            databaseReference.child("users").child(user_id).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // You can get the text using getValue. Since the DataSnapshot is of the exact
-                    // data you asked for (the node listName), when you use getValue you know it
-                    // will return a String.
-                    account[0] = dataSnapshot.getValue(Account.class);
-//*
-
-                    if (account[0] != null) {
-                        Log.d("My profile", "inside the data listener" + account[0].getName() + "  " + account[0].getAge() + "  " + account[0].getGender() + "   " + account[0].getMobile());
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-
-            });
-        return account[0];
-    }
 
 }
