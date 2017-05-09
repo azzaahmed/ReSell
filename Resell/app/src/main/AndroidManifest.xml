@@ -75,6 +75,24 @@
                 android:value=".Profile" />
         </activity>
 
+        <!--detail widget-->
+        <receiver
+            android:name=".Widget.ResellAppWidget"
+            android:label="@string/title_widget_detail"
+            android:enabled="@bool/widget_enabled" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.app.resell.ACTION_DATA_UPDATED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/resell_app_widget_info" />
+        </receiver>
+        <service
+            android:name=".Widget.WidgetRemoteViewsService"
+            android:enabled="@bool/widget_enabled"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+    </application>
 </application>
 
 </manifest>

@@ -2,4 +2,5 @@
 <resources>
 <bool name="widget_enabled">false</bool>
 <bool name="use_activity">true</bool>
+
 </resources>

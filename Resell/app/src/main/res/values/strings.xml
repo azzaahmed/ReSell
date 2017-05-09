@@ -34,5 +34,7 @@
     <string name="add_widget">Add widget</string>
     <string name="myitems">My Items</string>
     <string name="imageTransition">imageTransitionName</string>
+    <string name="title_widget_detail">Resell</string>
+    <string name="empty_resell_list">emty list</string>
 
 </resources>

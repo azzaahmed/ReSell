@@ -1,5 +1,6 @@
 package com.app.resell;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,7 @@ public class itemDetailsFragment extends Fragment {
     ImageView profileImage;
     private DatabaseReference databaseReference;
     String TAG="itemDetailsFragment";
+    public static final String ACTION_DATA_UPDATED = "com.app.resell.ACTION_DATA_UPDATED";
     public itemDetailsFragment() {
     }
 
@@ -104,6 +106,10 @@ public class itemDetailsFragment extends Fragment {
                     }
                 });
 
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+        getContext().sendBroadcast(dataUpdatedIntent);
+        updateWidgets(getContext());
+
     }
 
 
@@ -123,10 +129,10 @@ public class itemDetailsFragment extends Fragment {
                 if (account[0] != null) {
                     Log.d("My profile", "account from get user info method");
 
-                        if (account[0].getImage_url() != null)
-                            Picasso.with(getActivity())
-                                    .load(account[0].getImage_url()).fit().centerCrop()
-                                    .into(profileImage);
+                    if (account[0].getImage_url() != null)
+                        Picasso.with(getActivity())
+                                .load(account[0].getImage_url()).fit().centerCrop()
+                                .into(profileImage);
 
                     if (account[0].getName() != null) ownerName.setText(account[0].getName());
 
@@ -157,5 +163,13 @@ public class itemDetailsFragment extends Fragment {
                         return true;
                     }
                 });
+    }
+
+
+    private static void updateWidgets(Context context) {
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
     }
 }
