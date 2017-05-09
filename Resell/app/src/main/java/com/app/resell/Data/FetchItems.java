@@ -49,12 +49,7 @@ public class FetchItems {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     Item item = postSnapshot.getValue(Item.class);
                     Log.e("Get Data", item.getDescription());
-
-                    if (item.getUserId().equals(currentUser.getUid())) {
                         itemsList.add(item);
-                        Log.d("Widget service", "item id " + item.getItem_id());
-
-                    }
                 }
 
                 //widget
