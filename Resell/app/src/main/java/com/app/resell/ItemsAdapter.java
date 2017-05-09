@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.firebase.client.Query;
 import com.firebase.ui.FirebaseListAdapter;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -29,7 +30,7 @@ public class ItemsAdapter extends FirebaseListAdapter<Item> {
     @Override
     protected void populateView(View view, Item item) {
 
-        HomeFragment.progress.dismiss();
+
         Log.d("populate", "checking populate the view");
         TextView price = (TextView) view.findViewById(R.id.price);
         ImageView itemImage = (ImageView) view.findViewById(R.id.grid_item_imageview);
@@ -38,7 +39,17 @@ public class ItemsAdapter extends FirebaseListAdapter<Item> {
 
         Picasso.with(view.getContext())
                 .load(item.getImageUrl()).fit().centerCrop()
-                .into(itemImage);
+                .into(itemImage, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        HomeFragment.progress.dismiss();
+                    }
+
+                    @Override
+                    public void onError() {
+                        HomeFragment.progress.dismiss();
+                    }
+                });
 
     }
 
