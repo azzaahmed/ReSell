@@ -4,7 +4,7 @@
     android:initialLayout="@layout/resell_app_widget"
     android:minHeight="140dp"
     android:minWidth="220dp"
-    android:previewImage="@drawable/example_appwidget_preview"
+    android:previewImage="@drawable/preview_image"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="86400000"
     android:widgetCategory="home_screen"/>
