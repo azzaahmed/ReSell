@@ -1,6 +1,5 @@
 package com.app.resell;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,7 +30,7 @@ public class itemDetailsFragment extends Fragment {
     ImageView profileImage;
     private DatabaseReference databaseReference;
     String TAG="itemDetailsFragment";
-    public static final String ACTION_DATA_UPDATED = "com.app.resell.ACTION_DATA_UPDATED";
+  //  public static final String ACTION_DATA_UPDATED = "com.app.resell.ACTION_DATA_UPDATED";
     public itemDetailsFragment() {
     }
 
@@ -106,9 +105,9 @@ public class itemDetailsFragment extends Fragment {
                     }
                 });
 
-        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
-        getContext().sendBroadcast(dataUpdatedIntent);
-        updateWidgets(getContext());
+//        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+//        getContext().sendBroadcast(dataUpdatedIntent);
+//        updateWidgets(getContext());
 
     }
 
@@ -166,10 +165,10 @@ public class itemDetailsFragment extends Fragment {
     }
 
 
-    private static void updateWidgets(Context context) {
-        // Setting the package ensures that only components in our app will receive the broadcast
-        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
-                .setPackage(context.getPackageName());
-        context.sendBroadcast(dataUpdatedIntent);
-    }
+//    private static void updateWidgets(Context context) {
+//        // Setting the package ensures that only components in our app will receive the broadcast
+//        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+//                .setPackage(context.getPackageName());
+//        context.sendBroadcast(dataUpdatedIntent);
+//    }
 }

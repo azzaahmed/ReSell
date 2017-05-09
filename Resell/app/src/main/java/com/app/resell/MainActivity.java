@@ -175,6 +175,8 @@ Bitmap mBitmap;
                             Log.d(TAG, "sent to Find Ride from auth listener");
                             Log.d(TAG, "counter" + counterin);
                             startActivity(new Intent(getApplicationContext(), Home.class));
+
+
                             finish();
                             counterin++;
                         } else {
@@ -674,6 +676,8 @@ Bitmap mBitmap=null;
 //
 
 //    }
+
+
 
 
 }

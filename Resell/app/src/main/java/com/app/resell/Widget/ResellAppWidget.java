@@ -12,10 +12,10 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
+import com.app.resell.Data.FetchItems;
 import com.app.resell.MainActivity;
 import com.app.resell.R;
 import com.app.resell.itemDetails;
-import com.app.resell.itemDetailsFragment;
 
 /**
  * Implementation of App Widget functionality.
@@ -50,6 +50,7 @@ public class ResellAppWidget extends AppWidgetProvider {
                     .addNextIntentWithParentStack(clickIntentTemplate)
                     .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             views.setPendingIntentTemplate(R.id.widget_list, clickPendingIntentTemplate);
+
             views.setEmptyView(R.id.widget_list, R.id.widget_empty);
 
             // Tell the AppWidgetManager to perform an update on the current app widget
@@ -60,7 +61,7 @@ public class ResellAppWidget extends AppWidgetProvider {
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
-        if (itemDetailsFragment.ACTION_DATA_UPDATED.equals(intent.getAction())) {
+        if (FetchItems.ACTION_DATA_UPDATED.equals(intent.getAction())) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass()));

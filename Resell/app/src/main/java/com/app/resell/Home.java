@@ -10,8 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.app.resell.Data.FetchItems;
+import java.util.ArrayList;
+
 public class Home extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
+
+    public static ArrayList<Item> itemsList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +34,7 @@ public class Home extends AppCompatActivity {
             }
         });
         firebaseAuth = FirebaseAuth.getInstance();
+        FetchItems.syncImmediately(this);
 
     }
     @Override
@@ -71,6 +78,13 @@ public class Home extends AppCompatActivity {
         finish();
     }
 
+
+
+
+
 }
+
+
+
 
 

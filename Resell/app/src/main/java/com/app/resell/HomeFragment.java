@@ -67,11 +67,13 @@ public class HomeFragment extends Fragment {
                     Log.v(TAG, "item clicked");
                     Intent intent = new Intent(getActivity(), itemDetails.class).putExtra("selectedItem", selectedItem);
                     //startActivity(intent);
-                    Bundle bundle= ActivityOptions.makeSceneTransitionAnimation(getActivity()
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(getActivity()
                             , view.findViewById(R.id.grid_item_imageview), view.findViewById(R.id.grid_item_imageview).getTransitionName()).toBundle();
                     startActivity(intent, bundle);
                 }
             });
+
+
         }
         else{
             Toast.makeText(getContext(), "no internet connection", Toast.LENGTH_LONG).show();
@@ -96,5 +98,6 @@ public class HomeFragment extends Fragment {
 //            gridview.setAdapter(imageAdapter);
 //        }
     }
+
 }
 
